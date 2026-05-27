@@ -19,10 +19,9 @@
 - `assets/`：Cocos 工程资源，包含本地资源、远程资源源文件和脚本组件。
 - `settings/`：Cocos 工程配置。
 - `profiles/`：构建相关配置，仅保留必要的可提交配置文件。
-- `docs/`：换皮流程、资源路径、OSS 风险和执行计划。
-- `packages/`：每个换皮包的主题记录、素材清单、OSS prefix、构建记录和验收结果。
+- `README.md`：仓库用途、分支规则和当前主题说明；不再单独维护 `docs/` 或 `packages/` 说明目录。
 
 ## 分支约定
 
 - `main`：基础工程快照，只做 copy 基线和公共同步，不直接做具体主题换皮。
-- 主题分支：从 `main` 切出，例如 `shangke-dianming`，只放该主题的换皮改动。
+- 主题分支：从 `main` 切出，例如 `shangke-dianming`，只放该主题的换皮改动；额外说明只写根目录 `README.md`。
