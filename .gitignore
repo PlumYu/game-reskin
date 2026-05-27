@@ -1,0 +1,66 @@
+# Cocos Creator generated data
+/library/
+/temp/
+/local/
+/build/
+/tmp/
+/logs/
+/profiles/
+!/profiles/
+/profiles/*
+!/profiles/v2/
+/profiles/v2/*
+!/profiles/v2/packages/
+/profiles/v2/packages/*
+!/profiles/v2/packages/builder.json
+!/profiles/v2/packages/cocos-service.json
+!/profiles/v2/packages/wechatgame.json
+
+# Dependency and package manager caches
+/node_modules/
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+yarn-error.log
+package-lock.json.tmp
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Build and intermediate output
+dist/
+out/
+cache/
+.cache/
+*.log
+*.tmp
+*.temp
+
+# IDE and editor state
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+*.orig
+
+# OS generated files
+.DS_Store
+__MACOSX/
+Thumbs.db
+Desktop.ini
+
+# Local assistant scratch files
+.claude/
+.planning/
+CLAUDE.md

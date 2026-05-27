@@ -1,0 +1,404 @@
+import { _decorator, Component, Node, Label, Graphics, UITransform, Color, Size, Sprite, SpriteFrame, tween, v3 } from 'cc';
+import { GameApp } from './Core/GameApp';
+import { UIID, GameMode } from './Core/Enum';
+import SfxManager from './Core/SfxManager';
+import AssetService from './Core/AssetService';
+import RewardService from './Core/RewardService';
+import { GlobalHudMode } from './GlobalHud';
+import { getAdaptiveLayout, scaleLayout } from './Utils/LayoutService';
+import {
+    createNode, createLabel, createFullScreenOverlay, staggerEntrance, addButtonFeedback,
+    COLOR_WHITE, COLOR_BLACK,
+} from './Utils/UIBuilder';
+
+const { ccclass } = _decorator;
+
+const FAIL_RED = new Color(248, 60, 52, 255);
+const GOLD = new Color(255, 207, 42, 255);
+const TEXT_SHADOW = new Color(0, 0, 0, 115);
+const REVIVE_BUTTON_WIDTH = 336;
+const REVIVE_BUTTON_HEIGHT = 96;
+const REVIVE_BUTTON_Y_OFFSET = 150;
+const MAX_HEART_COUNT = 3;
+const REVIVE_HEART_COUNT = 1;
+
+@ccclass('FailPanel')
+export default class FailPanel extends Component {
+    private retryBtn!: Node;
+    private reviveBtn!: Node;
+    private helpBtn!: Node;
+    private remainingValueLabel!: Label;
+    private contentRoot!: Node;
+    private niumaFrame: SpriteFrame | null = null;
+    private heartBalloonNode: Node | null = null;
+    private heartBalloonBaseY = 0;
+
+    onLoad(): void {
+        this.buildUI();
+    }
+
+    private buildUI(): void {
+        const layout = getAdaptiveLayout();
+        this.node.getComponent(UITransform)?.setContentSize(new Size(layout.width, layout.height));
+
+        createFullScreenOverlay('bgOverlay', this.node, COLOR_BLACK, 192);
+
+        this.contentRoot = createNode('contentRoot', this.node);
+        this.contentRoot.getComponent(UITransform)?.setContentSize(new Size(layout.width, layout.height));
+
+        const titleY = Math.min(scaleLayout(460, layout), layout.topY - scaleLayout(160, layout));
+        const subtitleGap = 124;
+        const heartGap = 286;
+        const bottomY = layout.bottomY + scaleLayout(356, layout);
+
+        const title = this.createShadowLabel('title', this.contentRoot, '失败了~！', 76, COLOR_WHITE, true);
+        title.setPosition(0, titleY, 0);
+
+        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '只会搞抽象，却搞不定我~！', 34, GOLD, true);
+        subtitle.setPosition(-34, titleY - subtitleGap, 0);
+        this.createNiumaBadge(this.contentRoot, 224, titleY - subtitleGap + 12, 112);
+
+        this.heartBalloonNode = this.createHeartBalloon(this.contentRoot, 0, titleY - heartGap, 188);
+        const life = this.createShadowLabel('lifeHint', this.contentRoot, '再获得1条生命', 40, COLOR_WHITE, true);
+        life.setPosition(0, titleY - 455, 0);
+
+        const remainingRow = createNode('remainingRow', this.contentRoot);
+        remainingRow.setPosition(0, titleY - 528, 0);
+        this.createNiumaBadge(remainingRow, -120, 2, 58);
+        this.createShadowLabel('remainText', remainingRow, '剩余', 44, COLOR_WHITE, true).setPosition(-18, 0, 0);
+        const remainingValueNode = this.createShadowLabel('remainValue', remainingRow, '0', 58, FAIL_RED, true);
+        remainingValueNode.setPosition(88, -2, 0);
+        this.remainingValueLabel = remainingValueNode.getChildByName('remainValueLabel')?.getComponent(Label)!;
+
+        this.reviveBtn = this.createReviveButton(this.contentRoot, 0, bottomY + REVIVE_BUTTON_Y_OFFSET);
+        this.retryBtn = this.createRetryButton(this.contentRoot, -132, bottomY);
+        this.helpBtn = this.createHelpButton(this.contentRoot, 148, bottomY);
+    }
+
+    onEnable(): void {
+        const globalHud = GameApp.globalHud as { setMode?: (mode: GlobalHudMode) => void; syncLayout?: () => void } | null;
+        globalHud?.setMode?.(GlobalHudMode.LevelFail);
+        globalHud?.syncLayout?.();
+        this.refreshRemainingCount();
+        staggerEntrance([this.contentRoot], 0, 0.24, 34);
+        this.retryBtn.on(Node.EventType.TOUCH_END, this.onRetryClick, this);
+        this.reviveBtn.on(Node.EventType.TOUCH_END, this.onReviveClick, this);
+        this.helpBtn.on(Node.EventType.TOUCH_END, this.onHelpClick, this);
+        this.startHeartBalloonMotion();
+        this.startReviveButtonPulse();
+    }
+
+    onDisable(): void {
+        this.retryBtn.off(Node.EventType.TOUCH_END, this.onRetryClick, this);
+        this.reviveBtn.off(Node.EventType.TOUCH_END, this.onReviveClick, this);
+        this.helpBtn.off(Node.EventType.TOUCH_END, this.onHelpClick, this);
+        if (this.heartBalloonNode?.isValid) {
+            tween(this.heartBalloonNode).stop();
+            this.heartBalloonNode.setPosition(0, this.heartBalloonBaseY, 0);
+            this.heartBalloonNode.angle = 0;
+        }
+        if (this.reviveBtn?.isValid) {
+            tween(this.reviveBtn).stop();
+            this.reviveBtn.setScale(v3(1, 1, 1));
+        }
+    }
+
+    private refreshRemainingCount(): void {
+        const dg = GameApp.drawGrid as any;
+        const total = Math.max(0, Math.floor(dg?.totalCows || 0));
+        const found = Math.max(0, Math.floor(dg?.cowsFound || GameApp.foundCowNum || 0));
+        const remaining = total > 0 ? Math.max(0, total - found) : 0;
+        this.remainingValueLabel.string = remaining.toString();
+    }
+
+    private createShadowLabel(name: string, parent: Node, text: string, fontSize: number, color: Color, bold = false): Node {
+        const root = createNode(name, parent);
+        const shadow = createLabel(`${name}Shadow`, root, text, fontSize, TEXT_SHADOW, bold);
+        shadow.node.setPosition(3, -4, 0);
+        const label = createLabel(`${name}Label`, root, text, fontSize, color, bold);
+        label.node.setPosition(0, 0, 0);
+        return root;
+    }
+
+    private createReviveButton(parent: Node, x: number, y: number): Node {
+        const node = this.createPillButton('reviveBtn', parent, REVIVE_BUTTON_WIDTH, REVIVE_BUTTON_HEIGHT, FAIL_RED);
+        node.setPosition(x, y, 0);
+        this.drawPlayBadge(node, -78, 0);
+        createLabel('label', node, '复活', 44, COLOR_WHITE, true).node.setPosition(40, 1, 0);
+        return node;
+    }
+
+    private createRetryButton(parent: Node, x: number, y: number): Node {
+        const node = this.createPillButton('retryBtn', parent, 250, 78, FAIL_RED);
+        node.setPosition(x, y, 0);
+        createLabel('label', node, '重试', 34, COLOR_WHITE, true).node.setPosition(0, 13, 0);
+
+        const chip = createNode('staminaChip', node);
+        chip.setPosition(0, -25, 0);
+        chip.getComponent(UITransform)?.setContentSize(new Size(96, 30));
+        const g = chip.addComponent(Graphics);
+        g.fillColor = new Color(130, 38, 35, 215);
+        g.roundRect(-48, -15, 96, 30, 15);
+        g.fill();
+        createLabel('cost', chip, '⚡-15', 22, COLOR_WHITE, true).node.setPosition(0, 0, 0);
+        return node;
+    }
+
+    private createHelpButton(parent: Node, x: number, y: number): Node {
+        const node = this.createPillButton('helpBtn', parent, 280, 78, COLOR_WHITE);
+        node.setPosition(x, y, 0);
+        this.drawShareIcon(node, -72, 0, FAIL_RED);
+        createLabel('label', node, '求助好友', 30, FAIL_RED, true).node.setPosition(26, 0, 0);
+        return node;
+    }
+
+    private createPillButton(name: string, parent: Node, width: number, height: number, fill: Color): Node {
+        const node = createNode(name, parent);
+        node.getComponent(UITransform)?.setContentSize(new Size(width, height));
+        const g = node.addComponent(Graphics);
+        g.fillColor = new Color(0, 0, 0, 70);
+        g.roundRect(-width / 2 + 4, -height / 2 - 6, width, height, height / 2);
+        g.fill();
+        g.fillColor = fill;
+        g.roundRect(-width / 2, -height / 2, width, height, height / 2);
+        g.fill();
+        if (fill.r > 245 && fill.g > 245 && fill.b > 245) {
+            g.strokeColor = new Color(255, 255, 255, 230);
+            g.lineWidth = 3;
+            g.roundRect(-width / 2 + 2, -height / 2 + 2, width - 4, height - 4, height / 2 - 2);
+            g.stroke();
+        }
+        addButtonFeedback(node);
+        return node;
+    }
+
+    private createHeartBalloon(parent: Node, x: number, y: number, size: number): Node {
+        const node = createNode('lifeHeart', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(size, size));
+        const g = node.addComponent(Graphics);
+        const s = size / 100;
+        this.heartBalloonBaseY = y;
+
+        g.fillColor = new Color(0, 0, 0, 52);
+        g.ellipse(12 * s, -56 * s, 38 * s, 10 * s);
+        g.fill();
+
+        g.fillColor = new Color(188, 50, 22, 150);
+        this.drawHeartPath(g, 7 * s, -9 * s, s * 1.05);
+        g.fill();
+
+        g.fillColor = new Color(230, 68, 24, 255);
+        this.drawHeartPath(g, 4 * s, -5 * s, s * 1.03);
+        g.fill();
+
+        g.fillColor = new Color(255, 103, 39, 255);
+        this.drawHeartPath(g, 0, 0, s);
+        g.fill();
+
+        g.fillColor = new Color(255, 156, 84, 72);
+        this.drawHeartPath(g, -8 * s, 7 * s, s * 0.74);
+        g.fill();
+
+        g.fillColor = new Color(255, 255, 255, 196);
+        g.ellipse(-20 * s, 20 * s, 8 * s, 16 * s);
+        g.fill();
+        g.fillColor = new Color(255, 255, 255, 92);
+        g.ellipse(-29 * s, 4 * s, 8 * s, 11 * s);
+        g.fill();
+
+        g.strokeColor = new Color(255, 203, 168, 104);
+        g.lineWidth = Math.max(2, 2.1 * s);
+        this.drawHeartPath(g, -1 * s, 1 * s, s * 0.98);
+        g.stroke();
+
+        g.fillColor = new Color(213, 59, 22, 255);
+        g.roundRect(-13 * s, -56 * s, 26 * s, 14 * s, 6 * s);
+        g.fill();
+        g.fillColor = new Color(255, 141, 73, 170);
+        g.ellipse(-4 * s, -51 * s, 6 * s, 3 * s);
+        g.fill();
+
+        g.strokeColor = new Color(255, 220, 197, 120);
+        g.lineWidth = Math.max(1.5, 1.4 * s);
+        g.moveTo(0, -64 * s);
+        g.bezierCurveTo(8 * s, -78 * s, -7 * s, -89 * s, 4 * s, -103 * s);
+        g.stroke();
+        return node;
+    }
+
+    private startHeartBalloonMotion(): void {
+        const node = this.heartBalloonNode;
+        if (!node?.isValid) return;
+        tween(node).stop();
+        node.setPosition(0, this.heartBalloonBaseY, 0);
+        node.angle = 0;
+        tween(node)
+            .repeatForever(
+                tween()
+                    .to(0.92, { position: v3(-8, this.heartBalloonBaseY + 10, 0), angle: -3.5, scale: v3(1.03, 1.02, 1) }, { easing: 'sineOut' })
+                    .to(0.98, { position: v3(7, this.heartBalloonBaseY + 1, 0), angle: 3, scale: v3(0.995, 1.01, 1) }, { easing: 'sineInOut' })
+                    .to(0.86, { position: v3(0, this.heartBalloonBaseY, 0), angle: 0, scale: v3(1, 1, 1) }, { easing: 'sineIn' })
+            )
+            .start();
+    }
+
+    private startReviveButtonPulse(): void {
+        const node = this.reviveBtn;
+        if (!node?.isValid) return;
+        tween(node).stop();
+        node.setScale(v3(1, 1, 1));
+        tween(node)
+            .delay(0.18)
+            .repeatForever(
+                tween()
+                    .to(0.66, { scale: v3(1.08, 1.08, 1) }, { easing: 'quadInOut' })
+                    .to(0.66, { scale: v3(1, 1, 1) }, { easing: 'quadInOut' })
+            )
+            .start();
+    }
+
+    private drawHeartPath(g: Graphics, x: number, y: number, s: number): void {
+        g.moveTo(x, y - 31 * s);
+        g.bezierCurveTo(x - 45 * s, y - 4 * s, x - 55 * s, y + 38 * s, x - 22 * s, y + 48 * s);
+        g.bezierCurveTo(x - 7 * s, y + 53 * s, x, y + 42 * s, x, y + 30 * s);
+        g.bezierCurveTo(x, y + 42 * s, x + 7 * s, y + 53 * s, x + 22 * s, y + 48 * s);
+        g.bezierCurveTo(x + 55 * s, y + 38 * s, x + 45 * s, y - 4 * s, x, y - 31 * s);
+        g.close();
+    }
+
+    private createNiumaBadge(parent: Node, x: number, y: number, size: number): void {
+        const node = createNode('niumaBadge', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(size, size));
+        const g = node.addComponent(Graphics);
+        g.fillColor = new Color(0, 0, 0, 68);
+        g.circle(size * 0.04, -size * 0.05, size * 0.48);
+        g.fill();
+        g.fillColor = new Color(142, 190, 82, 255);
+        g.circle(0, 0, size * 0.47);
+        g.fill();
+        g.strokeColor = COLOR_WHITE;
+        g.lineWidth = Math.max(4, size * 0.07);
+        g.circle(0, 0, size * 0.43);
+        g.stroke();
+        const spriteNode = createNode('niumaSprite', node);
+        spriteNode.getComponent(UITransform)?.setContentSize(new Size(size * 0.86, size * 0.86));
+        spriteNode.setPosition(0, -size * 0.02, 0);
+        const sprite = spriteNode.addComponent(Sprite);
+        sprite.sizeMode = Sprite.SizeMode.CUSTOM;
+        sprite.trim = false;
+        this.loadNiumaFrame(frame => {
+            if (!frame || !spriteNode.isValid) return;
+            sprite.spriteFrame = frame;
+        });
+    }
+
+    private loadNiumaFrame(onLoaded: (frame: SpriteFrame | null) => void): void {
+        if (this.niumaFrame) {
+            onLoaded(this.niumaFrame);
+            return;
+        }
+        AssetService.loadSpriteFrame('characters/menu_idle_static', frame => {
+            this.niumaFrame = frame;
+            onLoaded(frame);
+        }, 'smooth');
+    }
+
+    private drawPlayBadge(parent: Node, x: number, y: number): void {
+        const node = createNode('playBadge', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(72, 52));
+        const g = node.addComponent(Graphics);
+        g.fillColor = COLOR_WHITE;
+        g.roundRect(-36, -26, 72, 52, 14);
+        g.fill();
+        g.fillColor = FAIL_RED;
+        g.moveTo(-8, -14);
+        g.lineTo(-8, 14);
+        g.lineTo(18, 0);
+        g.close();
+        g.fill();
+    }
+
+    private drawShareIcon(parent: Node, x: number, y: number, color: Color): void {
+        const node = createNode('shareIcon', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(54, 48));
+        const g = node.addComponent(Graphics);
+        g.strokeColor = color;
+        g.lineWidth = 7;
+        g.lineCap = Graphics.LineCap.ROUND;
+        g.moveTo(-12, 0);
+        g.lineTo(14, 17);
+        g.moveTo(-12, 0);
+        g.lineTo(14, -17);
+        g.stroke();
+        g.fillColor = color;
+        g.circle(-17, 0, 8);
+        g.circle(18, 20, 8);
+        g.circle(18, -20, 8);
+        g.fill();
+    }
+
+    private onRetryClick(): void {
+        SfxManager.instance.playUiClick();
+        if (GameApp.gameMode === GameMode.level) {
+            if (GameApp.user.stamina < 15) {
+                GameApp.uiManager?.closeAndOpen(UIID.FailPanel, UIID.PowerPanel);
+                return;
+            }
+            GameApp.tiliManager?.useTili(15);
+        }
+        GameApp.uiManager?.close(UIID.FailPanel);
+        const dg = GameApp.drawGrid as { reStartGame?: () => void };
+        dg?.reStartGame?.();
+    }
+
+    private onCloseClick(): void {
+        SfxManager.instance.playUiClick();
+        GameApp.isStartGame = false;
+        const dg = GameApp.drawGrid as { setGameUIVisible?: (v: boolean) => void };
+        dg?.setGameUIVisible?.(false);
+        GameApp.uiManager?.closeAndOpen(UIID.FailPanel, UIID.MainPanel);
+    }
+
+    private onReviveClick(): void {
+        SfxManager.instance.playUiClick();
+        RewardService.requestReward((rewarded) => {
+            if (rewarded) {
+                GameApp.uiManager?.close(UIID.FailPanel);
+                this.restoreOneLife();
+            }
+        });
+    }
+
+    private onHelpClick(): void {
+        SfxManager.instance.playUiClick();
+        GameApp.platform.share(() => {});
+    }
+
+    private restoreOneLife(): void {
+        const dg = GameApp.drawGrid as any;
+        if (!dg) return;
+        dg.isGameOver = false;
+        dg.mistakeCount = MAX_HEART_COUNT - REVIVE_HEART_COUNT;
+        dg.setGameUIVisible?.(true);
+        dg.renderGrid?.();
+        this.syncRevivedHearts(dg);
+    }
+
+    private syncRevivedHearts(dg: any): void {
+        const hearts = dg.heartContainer?.children || [];
+        for (let i = 0; i < hearts.length; i++) {
+            tween(hearts[i]).stop();
+            hearts[i].active = i < REVIVE_HEART_COUNT;
+            hearts[i].setScale(1, 1, 1);
+        }
+    }
+}
+
+export function createFailPanel(parent: Node): Component {
+    const node = createNode('FailPanel', parent);
+    return node.addComponent(FailPanel);
+}
