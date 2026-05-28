@@ -1,4 +1,5 @@
 import GameApp from './GameApp';
+import { showToast } from '../Utils/UIBuilder';
 
 export type RewardCallback = (rewarded: boolean) => void;
 
@@ -13,10 +14,24 @@ class RewardService {
     private interstitialRequesting = false;
 
     public requestReward(callback: RewardCallback): void {
+        if (this.rewardRequesting) {
+            this.showRewardNotice('广告正在加载，请稍候');
+            return;
+        }
+
+        if (!this.isRewardAdAvailable()) {
+            console.warn('[RewardService] reward ad unavailable, use free fallback');
+            callback(true);
+            return;
+        }
+
         this.rewardRequesting = true;
         try {
             GameApp.platform.watchAd((rewarded) => {
                 this.rewardRequesting = false;
+                if (!rewarded) {
+                    this.showRewardNotice('广告暂不可用，请稍后再试');
+                }
                 callback(rewarded);
             });
         } catch (error) {
@@ -68,6 +83,15 @@ class RewardService {
 
     public isInterstitialAdAvailable(): boolean {
         return !!GameApp.platform?.isInterstitialAdAvailable?.();
+    }
+
+    private showRewardNotice(text: string): void {
+        const root = GameApp.uiManager?.node;
+        if (root?.isValid) {
+            showToast(root, text);
+            return;
+        }
+        console.warn(`[RewardService] ${text}`);
     }
 }
 

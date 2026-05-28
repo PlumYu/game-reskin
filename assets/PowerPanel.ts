@@ -6,6 +6,7 @@ import RewardService from './Core/RewardService';
 import { getAdaptivePanelLayout } from './Utils/LayoutService';
 import {
     createNode, createLabel, createFullScreenOverlay, addButtonFeedback, getScreenSize,
+    showToast,
     COLOR_WHITE,
 } from './Utils/UIBuilder';
 
@@ -328,6 +329,8 @@ export default class PowerPanel extends Component {
                 GameApp.user.save();
                 this.refreshMainPanelStamina();
                 this.refreshAndClose();
+            } else {
+                showToast(GameApp.uiManager?.node || this.node, '分享暂不可用，请稍后再试');
             }
         });
     }

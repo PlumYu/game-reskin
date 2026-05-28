@@ -246,7 +246,7 @@ export function installDrawGridToolbar(target: any): void {
 
         const tools: { name: string; cost: number; size: number; iconSize: number; handler: () => void; drawIcon: (g: Graphics) => void }[] = [
             { name: '清除', cost: 0, size: largeCardSize, iconSize: largeIconSize, handler: this.onToolClear.bind(this), drawIcon: this.drawToolEraserIcon },
-            { name: '找牛', cost: COW_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolReveal.bind(this), drawIcon: this.drawToolCowIcon },
+            { name: '点名', cost: COW_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolReveal.bind(this), drawIcon: this.drawToolCowIcon },
             { name: '提示', cost: EXCLUDE_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolHint.bind(this), drawIcon: this.drawToolBulbIcon },
             { name: '坐标', cost: 0, size: largeCardSize, iconSize: largeIconSize, handler: this.onToolCoordinate.bind(this), drawIcon: this.drawToolGridIcon },
         ];
@@ -428,7 +428,7 @@ export function installDrawGridToolbar(target: any): void {
 
         if (hiddenCowIndices.length <= 0) {
             console.log("所有目标都已经找齐或翻开了！");
-            this.showWorkplaceToast('所有牛马都已经找齐了', v3(0, 330, 0), new Color(180, 190, 205, 255));
+            this.showWorkplaceToast('所有缺席目标都已经点到了', v3(0, 330, 0), new Color(180, 190, 205, 255));
             return;
         }
 
@@ -436,7 +436,7 @@ export function installDrawGridToolbar(target: any): void {
         if (!this.consumeHintCount('cow')) return;
 
         this.hintUsedThisLevel = true;
-        this.showWorkplaceToast('牛马雷达，直接锁一格', v3(0, 330, 0), new Color(255, 238, 92, 255));
+        this.showWorkplaceToast('点名册，直接锁定一个座位', v3(0, 330, 0), new Color(255, 238, 92, 255));
 
         const randomIndex = hiddenCowIndices[Math.floor(Math.random() * hiddenCowIndices.length)];
         this.revealSquare(randomIndex);

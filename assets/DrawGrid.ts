@@ -50,7 +50,7 @@ export class DrawGrid extends Component {
     private staticBoardSignature: string = '';
     private staticBoardDirty: boolean = true;
 
-    @property({ type: SpriteFrame, tooltip: '牛马的图片' })
+    @property({ type: SpriteFrame, tooltip: '缺席目标的图片' })
     public cowSpriteFrame: SpriteFrame = null!;
 
     @property({ type: [SpriteFrame], tooltip: 'Current board niuma idle sequence frames' })
@@ -62,7 +62,7 @@ export class DrawGrid extends Component {
     @property({ type: [SpriteFrame], tooltip: 'Current board niuma found sequence frames' })
     public cowFoundFrames: SpriteFrame[] = [];
 
-    @property({ type: SpriteFrame, tooltip: '胜利过渡大图，不填则复用牛马图片' })
+    @property({ type: SpriteFrame, tooltip: '胜利过渡大图，不填则复用缺席目标图片' })
     public celebrationCowSpriteFrame: SpriteFrame | null = null;
 
     @property({ type: SpriteFrame, tooltip: '胜利图片' })
@@ -80,7 +80,7 @@ export class DrawGrid extends Component {
     @property({ type: Label, tooltip: '金币数量标签' })
     public coinLabel: Label = null!;
 
-    @property({ type: Label, tooltip: '剩余牛马数量标签' })
+    @property({ type: Label, tooltip: '剩余缺席目标数量标签' })
     public remainingCowsLabel: Label = null!;
 
     @property({ type: Node, tooltip: '提示面板节点（其下需有 Label 与「一键应用」按钮）' })
@@ -135,9 +135,9 @@ export class DrawGrid extends Component {
         { key: 'steadyFinish', text: '最后一步别急' }
     ];
     private readonly ruleCardTexts = {
-        left: '每种气球\n仅有1只牛马',
-        middle: '每行每列\n仅有1只牛马',
-        right: '牛马之间\n不能相邻'
+        left: '每种颜色\n仅有1个缺席位',
+        middle: '每行每列\n仅有1个缺席位',
+        right: '缺席位之间\n不能相邻'
     };
 
     private countdownLabel: Label | null = null;
@@ -228,7 +228,7 @@ export class DrawGrid extends Component {
 
     // 游戏状态
     private cowsFound: number = 0;
-    /** 本关牛马总数（配置按 cows 数量，随机生成时 = gridSize） */
+    /** 本关缺席目标总数（配置字段仍沿用 cows，随机生成时 = gridSize） */
     private totalCows: number = 4;
     private mistakeCount: number = 0;
     private isGameOver: boolean = false;
@@ -255,13 +255,13 @@ export class DrawGrid extends Component {
     private gameplaySettingSprite: Sprite | null = null;
     private readonly hudLeftMargin: number = 28;
     private readonly hudTopMargin: number = 24;
-    /** 当前提示目标格下标，-1 表示无（提示1：可确定放牛） */
+    /** 当前提示目标格下标，-1 表示无（提示1：可确定点名） */
     private hintTargetIndex: number = -1;
     /** 高亮显示的格下标，-1 表示不高亮 */
     private highlightIndex: number = -1;
-    /** 提示2：已翻开的牛马下标，其行列未标×的格将高亮并一键标× */
+    /** 提示2：已翻开的缺席目标下标，其行列未标×的格将高亮并一键标× */
     private hintExcludeCowIndex: number = -1;
-    /** 提示3：已翻开的牛马下标，其8邻未标×的格将高亮并一键标× */
+    /** 提示3：已翻开的缺席目标下标，其8邻未标×的格将高亮并一键标× */
     private hintExcludeNeighborCowIndex: number = -1;
     /** 提示4（规则F 行列内异色）：某色未知格全在同一行/列时，-1 表示无；否则为行号或列号 */
     private hintColorOccupiedRowOrCol: number = -1;
@@ -275,7 +275,7 @@ export class DrawGrid extends Component {
     private hintOccupiedLineIndices: number[] = [];
     private hintOccupiedIsCol: boolean = false;
     private hintOccupiedColors: string[] = [];
-    /** 提示7（邻居色仅在此邻域）：当前格子的邻居颜色仅存在于该邻居集合时，当前格不可能为牛，可标× */
+    /** 提示7（邻居色仅在此邻域）：当前格子的邻居颜色仅存在于该邻居集合时，当前格不可能是缺席目标，可标× */
     private hintNeighborColorOnlyIndex: number = -1;
     /** 多格高亮（提示2/3/4/5/6 用） */
     private highlightIndices: number[] = [];
@@ -579,12 +579,12 @@ export class DrawGrid extends Component {
         return frame;
     }
     private readonly GUIDE_TIPS: string[] = [
-        '连点两下，把牛马找出来',
-        '每种颜色的气球只能有一只牛马',
-        '牛马之间不能相邻，单击排除周围气球',
-        '每行每列只能有一只牛马，继续排除这些气球',
-        '只剩最后的黄色气球了，连点两下找出牛马吧',
-        '最后两头牛马藏在哪儿，你找到了吗？'
+        '连点两下，点出缺席目标',
+        '每种颜色的座位只能有一个缺席目标',
+        '缺席目标之间不能相邻，单击排除周围座位',
+        '每行每列只能有一个缺席目标，继续排除这些座位',
+        '只剩最后的黄色座位了，连点两下完成点名吧',
+        '最后两个缺席位置在哪儿，你点到了吗？'
     ];
 }
 

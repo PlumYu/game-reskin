@@ -668,7 +668,7 @@ export function installDrawGridModes(target: any): void {
 
         // 统计行 — 逐行从侧面飞入
         const stats = [
-            { title: '找到牛马', value: `${GameApp.foundCowNum}`, unit: '个', delay: 0.45, fromX: -400 },
+            { title: '已点到', value: `${GameApp.foundCowNum}`, unit: '个', delay: 0.45, fromX: -400 },
             { title: '通过关数', value: `${GameApp.passLevel}`, unit: '关', delay: 0.60, fromX: 400 },
             { title: '坚持时间', value: this.formatSurvivalTime(GameApp.useTime), unit: '', delay: 0.75, fromX: -400 },
         ];

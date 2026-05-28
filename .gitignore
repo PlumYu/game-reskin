@@ -64,3 +64,11 @@ Desktop.ini
 .claude/
 .planning/
 CLAUDE.md
+task_plan.md
+findings.md
+progress.md
+
+# Reskin source drafts and generated previews
+/reskin-preview/
+/assets/image-2/
+/assets/image-2.meta

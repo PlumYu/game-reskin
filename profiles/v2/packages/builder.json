@@ -15,20 +15,21 @@
     "outputName": "wechatgame",
     "mainBundleCompressionType": "merge_dep",
     "platform": "wechatgame",
-    "name": "牛马消消气"
+    "name": "skdm",
+    "debug": false
   },
   "BuildTaskManager": {
     "taskMap": {
-      "1779447830302": {
+      "1779938366227": {
         "type": "build",
-        "id": "1779447830302",
+        "id": "1779938366227",
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2026-5-22 19:04:14 build success in 24 s!",
-        "detailMessage": "// ---- build task cocos-service：onAfterBuild ----\r",
+        "message": "2026-5-28 11:20:16 build success in 50 s!",
+        "detailMessage": "// ---- build task wechatgame：onAfterBuild ----\r",
         "options": {
-          "name": "moyudaren",
+          "name": "skdm",
           "server": "",
           "engineModulesConfigKey": "defaultConfig",
           "platform": "wechatgame",
@@ -71,7 +72,7 @@
           "packAutoAtlas": true,
           "startScene": "b9268875-a7b8-4a95-aeeb-653b6ad7e2fb",
           "outputName": "wechatgame",
-          "taskName": "wechatgame-001",
+          "taskName": "wechatgame-002",
           "scenes": [
             {
               "url": "db://assets/scene.scene",
@@ -85,9 +86,9 @@
           },
           "packages": {},
           "__version__": "1.3.9",
-          "logDest": "project://temp/builder/log/wechatgame2026-5-22 19-03.log"
+          "logDest": "project://temp/builder/log/wechatgame2026-5-28 11-19.log"
         },
-        "time": "2026-5-22 19:03:50",
+        "time": "2026-5-28 11:19:26",
         "dirty": false
       }
     }

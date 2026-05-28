@@ -12,6 +12,7 @@ import {
     createLabel,
     createFullScreenOverlay,
     addButtonFeedback,
+    showToast,
     COLOR_WHITE,
     COLOR_BLACK,
 } from './Utils/UIBuilder';
@@ -29,6 +30,9 @@ const RED_TEXT = new Color(255, 66, 64, 255);
 const SOFT_WHITE = new Color(255, 255, 255, 238);
 const MUTED_WHITE = new Color(255, 255, 255, 186);
 const DARK_TEXT = new Color(52, 66, 96, 255);
+const REPORT_BLUE = new Color(58, 141, 223, 255);
+const REPORT_LINE = new Color(173, 211, 244, 150);
+const REPORT_PAPER = new Color(244, 250, 255, 246);
 const MENU_IDLE_STATIC_PATH = 'characters/menu_idle_static';
 const MENU_IDLE_DIR_PATH = 'characters/menu_idle';
 const SETTLEMENT_MASCOT_FRAME_INTERVAL = 0.12;
@@ -89,6 +93,7 @@ export default class SurvivalOverPanel extends Component {
         root.setPosition(0, layout.y, 0);
         root.setScale(layout.scale, layout.scale, 1);
 
+        this.createSurvivalReportCard(root);
         this.createResultHeader(root);
         this.createSettlementTitle(root);
         this.createStats(root);
@@ -99,36 +104,64 @@ export default class SurvivalOverPanel extends Component {
     private createResultHeader(parent: Node): void {
         const result = this.getResultLine();
         const label = createLabel('SurvivalResultLine', parent, result, 44, SOFT_WHITE, true);
-        label.node.setPosition(0, 392, 0);
+        label.node.setPosition(0, 394, 0);
         this.setLabelSize(label, 590, 62);
         this.addTextOutline(label, this.isWin ? new Color(126, 70, 12, 210) : new Color(40, 40, 40, 180), 4);
     }
 
-    private createSettlementTitle(parent: Node): void {
-        const burst = createNode('SurvivalSettlementBurst', parent);
-        burst.setPosition(0, 250, 0);
-        const g = burst.addComponent(Graphics);
-        for (let i = 0; i < 18; i++) {
-            const angle = Math.PI * 2 * i / 18;
-            const inner = 46;
-            const outer = 238 + (i % 3) * 26;
-            const width = 18 + (i % 2) * 10;
-            const cos = Math.cos(angle);
-            const sin = Math.sin(angle);
-            const nx = Math.cos(angle + Math.PI / 2);
-            const ny = Math.sin(angle + Math.PI / 2);
-            g.fillColor = new Color(255, 255, 255, i % 2 === 0 ? 34 : 22);
-            g.moveTo(cos * inner - nx * width, sin * inner - ny * width);
-            g.lineTo(cos * inner + nx * width, sin * inner + ny * width);
-            g.lineTo(cos * outer + nx * width * 0.22, sin * outer + ny * width * 0.22);
-            g.lineTo(cos * outer - nx * width * 0.22, sin * outer - ny * width * 0.22);
-            g.close();
-            g.fill();
-        }
+    private createSurvivalReportCard(parent: Node): void {
+        const card = createNode('SurvivalReportCard', parent);
+        card.setPosition(0, -34, 0);
+        card.getComponent(UITransform)!.setContentSize(new Size(596, 770));
+        const g = card.addComponent(Graphics);
+        g.fillColor = new Color(12, 33, 72, 70);
+        g.roundRect(-286, -396, 572, 750, 30);
+        g.fill();
+        g.fillColor = REPORT_PAPER;
+        g.roundRect(-298, -382, 596, 764, 28);
+        g.fill();
+        g.strokeColor = new Color(162, 205, 241, 220);
+        g.lineWidth = 3;
+        g.roundRect(-298, -382, 596, 764, 28);
+        g.stroke();
 
-        const title = createLabel('SurvivalSettlementTitle', parent, '关卡结算', 70, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
-        title.node.setPosition(0, 248, 0);
-        this.setLabelSize(title, 600, 92);
+        g.fillColor = new Color(229, 244, 255, 255);
+        g.roundRect(-270, 186, 540, 142, 24);
+        g.fill();
+        g.strokeColor = REPORT_LINE;
+        g.lineWidth = 2;
+        for (let y = 130; y >= -150; y -= 56) {
+            g.moveTo(-236, y);
+            g.lineTo(236, y);
+        }
+        g.stroke();
+
+        g.strokeColor = new Color(74, 147, 218, 160);
+        g.lineWidth = 4;
+        g.moveTo(-218, 150);
+        g.lineTo(-218, -174);
+        g.stroke();
+    }
+
+    private createSettlementTitle(parent: Node): void {
+        const strip = createNode('SurvivalSettlementTitleStrip', parent);
+        strip.setPosition(0, 252, 0);
+        strip.getComponent(UITransform)!.setContentSize(new Size(548, 112));
+        const g = strip.addComponent(Graphics);
+        g.fillColor = new Color(31, 101, 178, 68);
+        g.roundRect(-262, -62, 524, 106, 24);
+        g.fill();
+        g.fillColor = this.isWin ? new Color(255, 209, 80, 255) : REPORT_BLUE;
+        g.roundRect(-274, -50, 548, 100, 22);
+        g.fill();
+        g.fillColor = new Color(255, 255, 255, 62);
+        g.roundRect(-246, 22, 492, 14, 7);
+        g.fill();
+        this.drawAttendanceClipboard(strip, -210, 0, this.isWin ? new Color(144, 101, 7, 255) : COLOR_WHITE);
+
+        const title = createLabel('SurvivalSettlementTitle', parent, '生存点名结算', 70, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
+        title.node.setPosition(42, 250, 0);
+        this.setLabelSize(title, 460, 92);
         this.addTextOutline(title, this.isWin ? new Color(255, 255, 255, 230) : new Color(66, 66, 66, 230), this.isWin ? 5 : 7);
         if (this.isWin) {
             this.createSuccessConfetti(parent);
@@ -176,19 +209,21 @@ export default class SurvivalOverPanel extends Component {
     }
 
     private createStats(parent: Node): void {
+        this.createStatsPaper(parent);
+
         const found = createNode('SurvivalFoundRow', parent);
         found.setPosition(0, 114, 0);
         found.getComponent(UITransform)!.setContentSize(new Size(570, 64));
-        this.createMenuIdleMascot(found, -188, 0, 58, 58);
-        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '找到了', 34, COLOR_WHITE, true);
+        this.drawAttendanceClipboard(found, -188, 0, REPORT_BLUE, 0.58);
+        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '已点到', 34, DARK_TEXT, true);
         foundPrefix.node.setPosition(-70, 0, 0);
         this.setLabelSize(foundPrefix, 150, 50);
         const foundNumber = createLabel('SurvivalFoundNumber', found, `${this.settlementFoundCowNum}`, 44, RED_TEXT, true);
         foundNumber.node.setPosition(43, 0, 0);
         this.setLabelSize(foundNumber, 58, 58);
-        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '只牛', 34, COLOR_WHITE, true);
-        foundSuffix.node.setPosition(123, 0, 0);
-        this.setLabelSize(foundSuffix, 100, 50);
+        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '个', 34, DARK_TEXT, true);
+        foundSuffix.node.setPosition(112, 0, 0);
+        this.setLabelSize(foundSuffix, 70, 50);
 
         this.drawDivider(parent, 0, 64, 430);
 
@@ -200,15 +235,39 @@ export default class SurvivalOverPanel extends Component {
 
         this.drawDivider(parent, 0, -52, 430);
 
-        const beat = createLabel('SurvivalBeatText', parent, `击败了 ${this.getBeatPercent()} 的玩家`, 43, GOLD_TEXT, true);
+        const beat = createLabel('SurvivalBeatText', parent, `击败了 ${this.getBeatPercent()} 的玩家`, 43, REPORT_BLUE, true);
         beat.node.setPosition(0, -106, 0);
         this.setLabelSize(beat, 610, 60);
+    }
+
+    private createStatsPaper(parent: Node): void {
+        const panel = createNode('SurvivalStatsPaper', parent);
+        panel.setPosition(0, 4, 0);
+        panel.getComponent(UITransform)!.setContentSize(new Size(548, 308));
+        const g = panel.addComponent(Graphics);
+        g.fillColor = COLOR_WHITE;
+        g.roundRect(-274, -154, 548, 308, 24);
+        g.fill();
+        g.strokeColor = new Color(202, 225, 246, 255);
+        g.lineWidth = 3;
+        g.roundRect(-274, -154, 548, 308, 24);
+        g.stroke();
+        g.fillColor = new Color(236, 247, 255, 255);
+        g.roundRect(-250, 78, 500, 54, 16);
+        g.fill();
     }
 
     private createRewardRow(parent: Node): void {
         const reward = createNode('SurvivalRewardRow', parent);
         reward.setPosition(0, -196, 0);
-        reward.getComponent(UITransform)!.setContentSize(new Size(250, 52));
+        reward.getComponent(UITransform)!.setContentSize(new Size(276, 66));
+        const g = reward.addComponent(Graphics);
+        g.fillColor = new Color(39, 132, 215, 245);
+        g.roundRect(-138, -33, 276, 66, 24);
+        g.fill();
+        g.fillColor = new Color(255, 255, 255, 52);
+        g.roundRect(-112, 14, 224, 9, 5);
+        g.fill();
         this.drawLightningIcon(reward, -58, 0, 44);
         this.staminaRewardLabel = createLabel('SurvivalRewardValue', reward, `+${this.baseStaminaReward}`, 36, COLOR_WHITE, true);
         this.staminaRewardLabel.node.setPosition(22, 0, 0);
@@ -216,7 +275,7 @@ export default class SurvivalOverPanel extends Component {
     }
 
     private createActions(parent: Node): void {
-        const reviveText = GameApp.survivalReviveTime > 0 ? '复活' : '复活已用';
+        const reviveText = GameApp.survivalReviveTime > 0 ? '继续' : '机会已用';
         this.reviveBtn = this.createPillButton('SurvivalReviveBtn', parent, reviveText, '+60秒', REVIVE_BUTTON_WIDTH, 106, 0, -326, GameApp.survivalReviveTime > 0 ? 'revive' : 'disabled', GameApp.survivalReviveTime > 0, 'clock');
         if (GameApp.survivalReviveTime <= 0) {
             this.setButtonDisabled(this.reviveBtn);
@@ -224,14 +283,14 @@ export default class SurvivalOverPanel extends Component {
 
         const restartSub = GameApp.user.freeSurvivalTime > 0
             ? `今日免费${GameApp.user.freeSurvivalTime}/2次`
-            : '看广告继续挑战';
-        this.restartBtn = this.createPillButton('SurvivalRestartBtn', parent, '重新挑战', restartSub, 342, 86, 0, -442, 'restart', GameApp.user.freeSurvivalTime <= 0, null);
+            : '看广告继续点名';
+        this.restartBtn = this.createPillButton('SurvivalRestartBtn', parent, '重新点名', restartSub, 342, 86, 0, -442, 'restart', GameApp.user.freeSurvivalTime <= 0, null);
 
         this.doubleStaminaBtn = this.createPillButton('SurvivalDoubleStaminaBtn', parent, '双倍体力', '', 282, 74, -154, -548, 'double', true, 'lightning');
         this.doubleButtonTitle = this.doubleStaminaBtn.getChildByName('title')?.getComponent(Label) || null;
         this.doubleButtonSub = this.doubleStaminaBtn.getChildByName('subtitle')?.getComponent(Label) || null;
 
-        this.friendBtn = this.createPillButton('SurvivalFriendBtn', parent, '求助好友', '', 282, 74, 154, -548, 'friend', false, 'share');
+        this.friendBtn = this.createPillButton('SurvivalFriendBtn', parent, '求助同学', '', 282, 74, 154, -548, 'friend', false, 'share');
     }
 
     private createPillButton(
@@ -419,13 +478,44 @@ export default class SurvivalOverPanel extends Component {
         group.getComponent(UITransform)!.setContentSize(new Size(260, 62));
         const fontSize = 34;
 
-        const titleLabel = createLabel(`${name}Title`, group, title, fontSize, COLOR_WHITE, true);
+        const titleLabel = createLabel(`${name}Title`, group, title, fontSize, DARK_TEXT, true);
         titleLabel.node.setPosition(-64, 0, 0);
         this.setLabelSize(titleLabel, 92, 48);
 
         const valueLabel = createLabel(`${name}Value`, group, value, fontSize, GOLD_TEXT, true);
         valueLabel.node.setPosition(58, 0, 0);
         this.setLabelSize(valueLabel, 166, 48);
+    }
+
+    private drawAttendanceClipboard(parent: Node, x: number, y: number, color: Color, scale = 1): void {
+        const node = createNode('AttendanceClipboardIcon', parent);
+        node.setPosition(x, y, 0);
+        const size = 82 * scale;
+        node.getComponent(UITransform)!.setContentSize(new Size(size, size));
+        const g = node.addComponent(Graphics);
+        const s = scale;
+        g.fillColor = new Color(0, 0, 0, 36);
+        g.roundRect(-32 * s + 3, -34 * s - 4, 64 * s, 68 * s, 10 * s);
+        g.fill();
+        g.fillColor = COLOR_WHITE;
+        g.roundRect(-32 * s, -34 * s, 64 * s, 68 * s, 10 * s);
+        g.fill();
+        g.strokeColor = color;
+        g.lineWidth = Math.max(2, 4 * s);
+        g.roundRect(-32 * s, -34 * s, 64 * s, 68 * s, 10 * s);
+        g.stroke();
+        g.fillColor = color;
+        g.roundRect(-16 * s, 24 * s, 32 * s, 12 * s, 6 * s);
+        g.fill();
+        g.strokeColor = color;
+        g.lineWidth = Math.max(2, 3 * s);
+        for (let i = 0; i < 3; i++) {
+            const rowY = 10 * s - i * 18 * s;
+            g.rect(-19 * s, rowY - 5 * s, 10 * s, 10 * s);
+            g.moveTo(-2 * s, rowY);
+            g.lineTo(20 * s, rowY);
+        }
+        g.stroke();
     }
 
     private createMenuIdleMascot(parent: Node, x: number, y: number, maxWidth: number, maxHeight: number): void {
@@ -546,7 +636,7 @@ export default class SurvivalOverPanel extends Component {
         const line = createNode('Divider', parent);
         line.setPosition(x, y, 0);
         const g = line.addComponent(Graphics);
-        g.strokeColor = new Color(255, 255, 255, 155);
+        g.strokeColor = new Color(126, 181, 228, 165);
         g.lineWidth = 3;
         g.moveTo(-width / 2, 0);
         g.lineTo(width / 2, 0);
@@ -695,7 +785,11 @@ export default class SurvivalOverPanel extends Component {
 
     private onFriendClick(): void {
         SfxManager.instance.playUiClick();
-        GameApp.platform.share(() => {});
+        GameApp.platform.share((success) => {
+            if (!success) {
+                showToast(GameApp.uiManager?.node || this.node, '分享暂不可用，请稍后再试');
+            }
+        });
     }
 
     private onMenuClick(): void {
@@ -712,9 +806,9 @@ export default class SurvivalOverPanel extends Component {
 
     private getResultLine(): string {
         if (this.settlementPassLevel < 10) {
-            return '你没撑过第十轮!';
+            return '未完成第十轮点名';
         }
-        return '恭喜通过第十轮！';
+        return '恭喜通过第十轮点名！';
     }
 
     private getBeatPercent(): string {

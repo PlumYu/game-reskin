@@ -425,7 +425,7 @@ export function installDrawGridAssets(target: any): void {
                     this.setDebugLevelLoadStatus(`已加载 ${path} / n=${data.n}`);
                     this.applyLevelConfig(data);
                     this.finishInitGrid();
-                    // 第一关：默认显示一只牛（揭示第二只）
+                    // 第一关：默认显示一个缺席目标（揭示第二个）
                     if (this.currentLevel === 1) {
                         const cowIndices = this.cowPositions.map((b, i) => b ? i : -1).filter(i => i >= 0);
                         if (cowIndices.length >= 2) {

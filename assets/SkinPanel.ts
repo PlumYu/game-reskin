@@ -17,12 +17,12 @@ interface SkinDef {
 }
 
 const SKINS: SkinDef[] = [
-    { id: 1, name: '经典牛', cost: 0, color: new Color(232, 184, 75, 255) },
-    { id: 2, name: '火焰牛', cost: 300, color: new Color(220, 80, 50, 255) },
-    { id: 3, name: '冰霜牛', cost: 300, color: new Color(80, 180, 240, 255) },
-    { id: 4, name: '暗影牛', cost: 500, color: new Color(120, 60, 200, 255) },
-    { id: 5, name: '黄金牛', cost: 800, color: new Color(255, 215, 0, 255) },
-    { id: 6, name: '彩虹牛', cost: 1200, color: new Color(255, 100, 180, 255) },
+    { id: 1, name: '经典座位', cost: 0, color: new Color(232, 184, 75, 255) },
+    { id: 2, name: '暖色座位', cost: 300, color: new Color(220, 80, 50, 255) },
+    { id: 3, name: '冰蓝座位', cost: 300, color: new Color(80, 180, 240, 255) },
+    { id: 4, name: '夜读座位', cost: 500, color: new Color(120, 60, 200, 255) },
+    { id: 5, name: '金色座位', cost: 800, color: new Color(255, 215, 0, 255) },
+    { id: 6, name: '彩虹座位', cost: 1200, color: new Color(255, 100, 180, 255) },
 ];
 
 @ccclass('SkinPanel')
@@ -55,7 +55,7 @@ export default class SkinPanel extends Component {
         cardG.fill();
 
         // 标题
-        createLabel('title', card, '皮肤商店', 30, COLOR_GOLD, true).node.setPosition(0, 230, 0);
+        createLabel('title', card, '座位皮肤', 30, COLOR_GOLD, true).node.setPosition(0, 230, 0);
 
         // 金币显示
         this.coinLabel = createLabel('coin', card, '', 20, COLOR_GOLD);

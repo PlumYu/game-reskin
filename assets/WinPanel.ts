@@ -165,7 +165,7 @@ export class WinPanel extends Component {
         graphicsNode.addComponent(CcUITransform).setContentSize(settlementSize.width, settlementSize.height);
         this.celebrationGraphics = graphicsNode.addComponent(Graphics);
 
-        const titleNode = this.createCelebrationLabel('最后一只没藏住', 44, new Color(255, 255, 255, 255));
+        const titleNode = this.createCelebrationLabel('最后一个也点到了', 44, new Color(255, 255, 255, 255));
         titleNode.parent = root;
         const titleY = Math.min(scaleLayout(472, layout), layout.topY - scaleLayout(156, layout));
         titleNode.setPosition(0, titleY);

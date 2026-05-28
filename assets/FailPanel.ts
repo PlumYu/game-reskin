@@ -8,12 +8,13 @@ import { GlobalHudMode } from './GlobalHud';
 import { getAdaptiveLayout, scaleLayout } from './Utils/LayoutService';
 import {
     createNode, createLabel, createFullScreenOverlay, staggerEntrance, addButtonFeedback,
+    showToast,
     COLOR_WHITE, COLOR_BLACK,
 } from './Utils/UIBuilder';
 
 const { ccclass } = _decorator;
 
-const FAIL_RED = new Color(248, 60, 52, 255);
+const FAIL_RED = new Color(63, 132, 232, 255);
 const GOLD = new Color(255, 207, 42, 255);
 const TEXT_SHADOW = new Color(0, 0, 0, 115);
 const REVIVE_BUTTON_WIDTH = 336;
@@ -47,30 +48,31 @@ export default class FailPanel extends Component {
         this.contentRoot.getComponent(UITransform)?.setContentSize(new Size(layout.width, layout.height));
 
         const titleY = Math.min(scaleLayout(460, layout), layout.topY - scaleLayout(160, layout));
-        const subtitleGap = 124;
-        const heartGap = 286;
         const bottomY = layout.bottomY + scaleLayout(356, layout);
+        const sheetY = titleY - scaleLayout(222, layout);
 
-        const title = this.createShadowLabel('title', this.contentRoot, '失败了~！', 76, COLOR_WHITE, true);
-        title.setPosition(0, titleY, 0);
+        this.createFailureSheet(this.contentRoot, 0, sheetY, scaleLayout(572, layout), scaleLayout(520, layout));
 
-        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '只会搞抽象，却搞不定我~！', 34, GOLD, true);
-        subtitle.setPosition(-34, titleY - subtitleGap, 0);
-        this.createNiumaBadge(this.contentRoot, 224, titleY - subtitleGap + 12, 112);
+        const title = this.createShadowLabel('title', this.contentRoot, '点名失败', 62, FAIL_RED, true);
+        title.setPosition(0, sheetY + scaleLayout(180, layout), 0);
 
-        this.heartBalloonNode = this.createHeartBalloon(this.contentRoot, 0, titleY - heartGap, 188);
-        const life = this.createShadowLabel('lifeHint', this.contentRoot, '再获得1条生命', 40, COLOR_WHITE, true);
-        life.setPosition(0, titleY - 455, 0);
+        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '缺席名单还没核对完', 32, GOLD, true);
+        subtitle.setPosition(0, sheetY + scaleLayout(126, layout), 0);
+
+        this.createAbsenceSheetIcon(this.contentRoot, 0, sheetY + scaleLayout(18, layout), scaleLayout(178, layout));
+
+        const life = this.createShadowLabel('lifeHint', this.contentRoot, '补回 1 次点名机会', 34, new Color(58, 92, 138, 255), true);
+        life.setPosition(0, sheetY - scaleLayout(110, layout), 0);
 
         const remainingRow = createNode('remainingRow', this.contentRoot);
-        remainingRow.setPosition(0, titleY - 528, 0);
-        this.createNiumaBadge(remainingRow, -120, 2, 58);
-        this.createShadowLabel('remainText', remainingRow, '剩余', 44, COLOR_WHITE, true).setPosition(-18, 0, 0);
+        remainingRow.setPosition(0, sheetY - scaleLayout(176, layout), 0);
+        this.drawSmallAbsenceIcon(remainingRow, -122, 0, 58);
+        this.createShadowLabel('remainText', remainingRow, '未点到', 40, new Color(58, 92, 138, 255), true).setPosition(-18, 0, 0);
         const remainingValueNode = this.createShadowLabel('remainValue', remainingRow, '0', 58, FAIL_RED, true);
         remainingValueNode.setPosition(88, -2, 0);
         this.remainingValueLabel = remainingValueNode.getChildByName('remainValueLabel')?.getComponent(Label)!;
 
-        this.reviveBtn = this.createReviveButton(this.contentRoot, 0, bottomY + REVIVE_BUTTON_Y_OFFSET);
+        this.reviveBtn = this.createReviveButton(this.contentRoot, 0, bottomY + scaleLayout(REVIVE_BUTTON_Y_OFFSET - 8, layout));
         this.retryBtn = this.createRetryButton(this.contentRoot, -132, bottomY);
         this.helpBtn = this.createHelpButton(this.contentRoot, 148, bottomY);
     }
@@ -120,24 +122,108 @@ export default class FailPanel extends Component {
         return root;
     }
 
+    private createFailureSheet(parent: Node, x: number, y: number, width: number, height: number): void {
+        const node = createNode('absenceReportSheet', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(width, height));
+        const g = node.addComponent(Graphics);
+        const radius = Math.max(18, height * 0.045);
+        g.fillColor = new Color(0, 0, 0, 68);
+        g.roundRect(-width / 2 + 8, -height / 2 - 8, width - 16, height, radius);
+        g.fill();
+        g.fillColor = new Color(246, 251, 255, 250);
+        g.roundRect(-width / 2, -height / 2, width, height, radius);
+        g.fill();
+        g.strokeColor = new Color(184, 213, 243, 230);
+        g.lineWidth = 3;
+        g.roundRect(-width / 2, -height / 2, width, height, radius);
+        g.stroke();
+
+        g.fillColor = new Color(229, 242, 255, 255);
+        g.roundRect(-width / 2 + 28, height / 2 - 98, width - 56, 74, 20);
+        g.fill();
+        g.strokeColor = new Color(191, 221, 247, 160);
+        g.lineWidth = 2;
+        for (let lineY = height / 2 - 138; lineY > -height / 2 + 48; lineY -= 48) {
+            g.moveTo(-width / 2 + 80, lineY);
+            g.lineTo(width / 2 - 54, lineY);
+        }
+        g.stroke();
+
+        g.strokeColor = new Color(83, 151, 222, 180);
+        g.lineWidth = 4;
+        g.moveTo(-width / 2 + 78, height / 2 - 126);
+        g.lineTo(-width / 2 + 78, -height / 2 + 46);
+        g.stroke();
+    }
+
+    private createAbsenceSheetIcon(parent: Node, x: number, y: number, size: number): void {
+        const node = createNode('absenceGridIcon', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(size, size));
+        const g = node.addComponent(Graphics);
+        const cell = size / 4.8;
+        const startX = -cell * 1.5;
+        const startY = cell * 1.5;
+        g.fillColor = new Color(63, 132, 232, 255);
+        g.roundRect(-size * 0.42, -size * 0.42, size * 0.84, size * 0.84, size * 0.12);
+        g.fill();
+        g.fillColor = new Color(255, 255, 255, 235);
+        g.roundRect(-size * 0.34, -size * 0.34, size * 0.68, size * 0.68, size * 0.08);
+        g.fill();
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+                const cx = startX + col * cell;
+                const cy = startY - row * cell;
+                const isMissing = row === 2 && col === 2;
+                g.fillColor = isMissing ? new Color(255, 207, 42, 255) : new Color(204, 225, 246, 255);
+                g.roundRect(cx - cell * 0.36, cy - cell * 0.3, cell * 0.72, cell * 0.6, cell * 0.12);
+                g.fill();
+            }
+        }
+        g.strokeColor = new Color(255, 255, 255, 255);
+        g.lineWidth = Math.max(4, size * 0.04);
+        g.lineCap = Graphics.LineCap.ROUND;
+        g.moveTo(size * 0.17, -size * 0.16);
+        g.lineTo(size * 0.34, -size * 0.33);
+        g.stroke();
+    }
+
+    private drawSmallAbsenceIcon(parent: Node, x: number, y: number, size: number): void {
+        const node = createNode('smallAbsenceIcon', parent);
+        node.setPosition(x, y, 0);
+        node.getComponent(UITransform)?.setContentSize(new Size(size, size));
+        const g = node.addComponent(Graphics);
+        g.fillColor = new Color(63, 132, 232, 255);
+        g.roundRect(-size / 2, -size / 2, size, size, size * 0.18);
+        g.fill();
+        g.fillColor = COLOR_WHITE;
+        g.roundRect(-size * 0.28, -size * 0.16, size * 0.56, size * 0.32, size * 0.08);
+        g.fill();
+        g.strokeColor = GOLD;
+        g.lineWidth = Math.max(3, size * 0.06);
+        g.circle(size * 0.24, -size * 0.18, size * 0.12);
+        g.stroke();
+    }
+
     private createReviveButton(parent: Node, x: number, y: number): Node {
         const node = this.createPillButton('reviveBtn', parent, REVIVE_BUTTON_WIDTH, REVIVE_BUTTON_HEIGHT, FAIL_RED);
         node.setPosition(x, y, 0);
         this.drawPlayBadge(node, -78, 0);
-        createLabel('label', node, '复活', 44, COLOR_WHITE, true).node.setPosition(40, 1, 0);
+        createLabel('label', node, '继续', 44, COLOR_WHITE, true).node.setPosition(40, 1, 0);
         return node;
     }
 
     private createRetryButton(parent: Node, x: number, y: number): Node {
         const node = this.createPillButton('retryBtn', parent, 250, 78, FAIL_RED);
         node.setPosition(x, y, 0);
-        createLabel('label', node, '重试', 34, COLOR_WHITE, true).node.setPosition(0, 13, 0);
+        createLabel('label', node, '重来', 34, COLOR_WHITE, true).node.setPosition(0, 13, 0);
 
         const chip = createNode('staminaChip', node);
         chip.setPosition(0, -25, 0);
         chip.getComponent(UITransform)?.setContentSize(new Size(96, 30));
         const g = chip.addComponent(Graphics);
-        g.fillColor = new Color(130, 38, 35, 215);
+        g.fillColor = new Color(37, 85, 148, 215);
         g.roundRect(-48, -15, 96, 30, 15);
         g.fill();
         createLabel('cost', chip, '⚡-15', 22, COLOR_WHITE, true).node.setPosition(0, 0, 0);
@@ -148,7 +234,7 @@ export default class FailPanel extends Component {
         const node = this.createPillButton('helpBtn', parent, 280, 78, COLOR_WHITE);
         node.setPosition(x, y, 0);
         this.drawShareIcon(node, -72, 0, FAIL_RED);
-        createLabel('label', node, '求助好友', 30, FAIL_RED, true).node.setPosition(26, 0, 0);
+        createLabel('label', node, '求助同学', 30, FAIL_RED, true).node.setPosition(26, 0, 0);
         return node;
     }
 
@@ -375,7 +461,11 @@ export default class FailPanel extends Component {
 
     private onHelpClick(): void {
         SfxManager.instance.playUiClick();
-        GameApp.platform.share(() => {});
+        GameApp.platform.share((success) => {
+            if (!success) {
+                showToast(GameApp.uiManager?.node || this.node, '分享暂不可用，请稍后再试');
+            }
+        });
     }
 
     private restoreOneLife(): void {

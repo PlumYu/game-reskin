@@ -54,11 +54,11 @@ function submitRankScores(onComplete?: () => void): void {
 }
 
 function rankTypeTitle(type: number): string {
-    return type === RANK_SURVIVAL ? '生存榜' : '关卡榜';
+    return type === RANK_SURVIVAL ? '生存点名榜' : '点名闯关榜';
 }
 
 function emptyRankText(type: number): string {
-    return type === RANK_SURVIVAL ? '暂无生存榜数据' : '暂无关卡榜数据';
+    return type === RANK_SURVIVAL ? '暂无生存点名数据' : '暂无点名闯关数据';
 }
 
 function formatScore(type: number, score: number): string {
@@ -137,7 +137,7 @@ export default class RankPanel extends Component {
             GameApp.uiManager?.close(UIID.RankPanel);
         });
 
-        const levelTab = this.createTab(card, 'levelTab', '关卡榜');
+        const levelTab = this.createTab(card, 'levelTab', '点名榜');
         levelTab.node.setPosition(-118, cardHeight / 2 - 122, 0);
         this.levelTabLabel = levelTab.label;
         this.levelTabBg = levelTab.bg;

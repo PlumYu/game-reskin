@@ -310,13 +310,17 @@ export default class MainPanel extends Component {
         const survivalImageW = Math.round(modeImageW * 512 / 501);
         const survivalImageH = Math.round(modeImageH * 370 / 336);
         const modeH = modeImageH;
-        const modeTextW = modeImageW * 0.58;
-        const modeLabelX = -modeImageW * 0.21;
-        const dailyTextX = modeLabelX + scaleLayout(20, layout);
-        const survivalTextX = modeLabelX + scaleLayout(18, layout);
-        const survivalFreeTextX = survivalTextX - scaleLayout(12, layout);
-        const dailyTimerY = -scaleLayout(66, layout);
+        const modeTextW = modeImageW * 0.56;
+        const modeTextX = modeImageW * 0.15;
+        const dailyTextX = modeTextX;
+        const survivalTextX = modeTextX;
+        const survivalFreeTextX = survivalTextX;
+        const dailyTimerY = -scaleLayout(50, layout);
         const modeRowY = -scaleLayout(62, layout);
+        const dailyCardX = -(modeW + modeGap) / 2 - scaleLayout(6, layout);
+        const dailyCardY = modeRowY + scaleLayout(14, layout);
+        const survivalCardX = (modeW + modeGap) / 2 + scaleLayout(8, layout);
+        const survivalCardY = modeRowY - scaleLayout(12, layout);
 
         // classicBtn: main level entry
         const levelNum = GameApp.user.level;
@@ -339,24 +343,33 @@ export default class MainPanel extends Component {
         classicLabel.node.setPosition(0, scaleLayout(8, layout), 0);
         this.classicBtn = classicNode;
 
+        this.createModeClusterBoard(
+            bottomSection,
+            0,
+            modeRowY,
+            Math.min(contentW - scaleLayout(52, layout), modeRowW + scaleLayout(52, layout)),
+            modeImageH + scaleLayout(72, layout),
+        );
+
         // survivalBar: survival mode entry
         const survivalNode = createNode('survivalBar', bottomSection);
-        survivalNode.setPosition((modeW + modeGap) / 2, modeRowY, 0);
+        survivalNode.setPosition(survivalCardX, survivalCardY, 0);
+        survivalNode.angle = 0.8;
         const survivalUt = survivalNode.getComponent(UITransform)!;
-        survivalUt.setContentSize(new Size(modeW, modeH));
+        survivalUt.setContentSize(new Size(Math.max(modeW, survivalImageW), Math.max(modeH, survivalImageH)));
         this.createMenuImage('survivalButtonImage', survivalNode, 'images/menu_survival_button', survivalImageW, survivalImageH, v3(0, 0, 0));
         this.createSparkle('survivalDecorSparkle', survivalNode, scaleLayout(18, layout), -survivalImageW * 0.22, survivalImageH * 0.24);
         const survTitle = createLabel('survTitle', survivalNode, '生存模式', scaleLayout(34, layout), COLOR_WHITE, true);
         survTitle.horizontalAlign = Label.HorizontalAlign.LEFT;
         survTitle.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(42, layout)));
-        survTitle.node.setPosition(survivalTextX, scaleLayout(48, layout), 0);
+        survTitle.node.setPosition(survivalTextX, scaleLayout(38, layout), 0);
         const survTitleOutline = survTitle.node.addComponent(LabelOutline);
         survTitleOutline.color = new Color(20, 151, 119, 160);
         survTitleOutline.width = scaleLayout(2, layout);
         const survFree = createLabel('survFree', survivalNode, '今日免费', scaleLayout(23, layout), new Color(235, 255, 245, 245), true);
         survFree.horizontalAlign = Label.HorizontalAlign.LEFT;
         survFree.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(32, layout)));
-        survFree.node.setPosition(survivalFreeTextX, scaleLayout(8, layout), 0);
+        survFree.node.setPosition(survivalFreeTextX, scaleLayout(2, layout), 0);
         const survFreeCount = createLabel('survFreeCount', survivalNode, '1/2', scaleLayout(23, layout), new Color(235, 255, 245, 245), true);
         survFreeCount.horizontalAlign = Label.HorizontalAlign.LEFT;
         survFreeCount.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(32, layout)));
@@ -364,7 +377,7 @@ export default class MainPanel extends Component {
 
         const adPrompt = createNode('survAdPrompt', survivalNode);
         adPrompt.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(36, layout)));
-        adPrompt.setPosition(modeLabelX + scaleLayout(8, layout), -scaleLayout(17, layout), 0);
+        adPrompt.setPosition(survivalTextX, -scaleLayout(22, layout), 0);
         const adTextColor = new Color(235, 255, 245, 245);
         const adPrefix = createLabel('survAdPromptPrefix', adPrompt, '看', scaleLayout(21, layout), adTextColor, true);
         adPrefix.node.getComponent(UITransform)!.setContentSize(new Size(scaleLayout(30, layout), scaleLayout(34, layout)));
@@ -375,48 +388,85 @@ export default class MainPanel extends Component {
         adIcon.getComponent(UITransform)!.setContentSize(new Size(adIconW, adIconH));
         adIcon.setPosition(-scaleLayout(31, layout), 0, 0);
         this.drawSurvivalAdIcon(adIcon, adIconW, adIconH);
-        const adSuffix = createLabel('survAdPromptSuffix', adPrompt, '增加次数', scaleLayout(21, layout), adTextColor, true);
-        adSuffix.node.getComponent(UITransform)!.setContentSize(new Size(scaleLayout(100, layout), scaleLayout(34, layout)));
-        adSuffix.node.setPosition(scaleLayout(38, layout), 0, 0);
+        const adSuffix = createLabel('survAdPromptSuffix', adPrompt, '增加次数 0/2', scaleLayout(21, layout), adTextColor, true);
+        adSuffix.horizontalAlign = Label.HorizontalAlign.LEFT;
+        adSuffix.node.getComponent(UITransform)!.setContentSize(new Size(scaleLayout(132, layout), scaleLayout(34, layout)));
+        adSuffix.node.setPosition(scaleLayout(54, layout), 0, 0);
         this.survivalBar = survivalNode;
         this.refreshSurvivalFreeText();
 
         // dailyChallengeCard: secondary daily challenge entry
         const dailyNode = createNode('dailyChallengeCard', bottomSection);
-        dailyNode.setPosition(-(modeW + modeGap) / 2, modeRowY, 0);
+        dailyNode.setPosition(dailyCardX, dailyCardY, 0);
+        dailyNode.angle = -0.8;
         const dailyUt = dailyNode.getComponent(UITransform)!;
-        dailyUt.setContentSize(new Size(modeW, modeH));
+        dailyUt.setContentSize(new Size(Math.max(modeW, modeImageW), modeImageH));
         this.createMenuImage('dailyButtonImage', dailyNode, 'images/menu_daily_button', modeImageW, modeImageH, v3(0, 0, 0));
         this.createSparkle('dailyDecorSparkle', dailyNode, scaleLayout(18, layout), modeImageW * 0.36, modeImageH * 0.33);
         const dailyTitle = createLabel('dailyTitle', dailyNode, '每日挑战', scaleLayout(34, layout), COLOR_WHITE, true);
         dailyTitle.horizontalAlign = Label.HorizontalAlign.LEFT;
         dailyTitle.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(42, layout)));
-        dailyTitle.node.setPosition(dailyTextX, scaleLayout(47, layout), 0);
+        dailyTitle.node.setPosition(dailyTextX, scaleLayout(39, layout), 0);
         const dailyTitleOutline = dailyTitle.node.addComponent(LabelOutline);
         dailyTitleOutline.color = new Color(114, 72, 210, 170);
         dailyTitleOutline.width = scaleLayout(2, layout);
         const dailySub = createLabel('dailySub', dailyNode, '全网同一关', scaleLayout(20, layout), new Color(247, 242, 255, 235), true);
         dailySub.horizontalAlign = Label.HorizontalAlign.LEFT;
         dailySub.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(28, layout)));
-        dailySub.node.setPosition(dailyTextX, scaleLayout(13, layout), 0);
+        dailySub.node.setPosition(dailyTextX, scaleLayout(8, layout), 0);
         const dailyFree = createLabel('dailyFree', dailyNode, '免费 1/1', scaleLayout(21, layout), new Color(255, 255, 255, 245), true);
         dailyFree.horizontalAlign = Label.HorizontalAlign.LEFT;
         dailyFree.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(30, layout)));
-        dailyFree.node.setPosition(dailyTextX, -scaleLayout(17, layout), 0);
+        dailyFree.node.setPosition(dailyTextX, -scaleLayout(20, layout), 0);
         const clockSize = scaleLayout(30, layout);
-        const dailyClockX = dailyTextX - modeTextW / 2 + scaleLayout(42, layout);
+        const dailyClockX = dailyTextX - modeTextW / 2 + scaleLayout(24, layout);
         const dailyClock = createNode('dailyTimerClock', dailyNode);
         dailyClock.getComponent(UITransform)!.setContentSize(new Size(clockSize, clockSize));
         dailyClock.setPosition(dailyClockX, dailyTimerY, 0);
         this.drawDailyClockIcon(dailyClock, clockSize);
-        const dailyTimerW = scaleLayout(96, layout);
+        const dailyTimerW = scaleLayout(108, layout);
         const clockTextGap = scaleLayout(2, layout);
-        const dailyTimer = createLabel('dailyTimer', dailyNode, '--:--:--', scaleLayout(21, layout), new Color(122, 82, 205, 255), true);
+        const dailyTimer = createLabel('dailyTimer', dailyNode, '--:--:--', scaleLayout(21, layout), new Color(255, 245, 184, 255), true);
         dailyTimer.horizontalAlign = Label.HorizontalAlign.LEFT;
         dailyTimer.overflow = Label.Overflow.CLAMP;
         dailyTimer.node.getComponent(UITransform)!.setContentSize(new Size(dailyTimerW, scaleLayout(30, layout)));
         dailyTimer.node.setPosition(dailyClockX + clockSize / 2 + clockTextGap + dailyTimerW / 2, dailyTimerY, 0);
+        const dailyTimerOutline = dailyTimer.node.addComponent(LabelOutline);
+        dailyTimerOutline.color = new Color(70, 68, 168, 210);
+        dailyTimerOutline.width = scaleLayout(1.5, layout);
         this.dailyChallengeCard = dailyNode;
+    }
+
+    private createModeClusterBoard(parent: Node, x: number, y: number, width: number, height: number): void {
+        const board = createNode('modeClusterBoard', parent);
+        board.setPosition(x, y, 0);
+        board.getComponent(UITransform)!.setContentSize(new Size(width, height));
+        const g = board.addComponent(Graphics);
+        g.fillColor = new Color(35, 68, 112, 34);
+        g.roundRect(-width / 2 + 8, -height / 2 - 6, width - 16, height, 20);
+        g.fill();
+        g.fillColor = new Color(74, 136, 128, 118);
+        g.roundRect(-width / 2, -height / 2, width, height, 20);
+        g.fill();
+        g.fillColor = new Color(255, 246, 214, 170);
+        g.roundRect(-width / 2 + 14, height / 2 - 18, width - 28, 8, 4);
+        g.fill();
+        g.strokeColor = new Color(232, 244, 238, 92);
+        g.lineWidth = 3;
+        g.roundRect(-width / 2 + 4, -height / 2 + 4, width - 8, height - 8, 17);
+        g.stroke();
+
+        g.strokeColor = new Color(232, 244, 238, 78);
+        g.lineWidth = 2;
+        for (let lineY = -height / 2 + 30; lineY < height / 2 - 28; lineY += 34) {
+            g.moveTo(-width / 2 + 34, lineY);
+            g.lineTo(width / 2 - 34, lineY);
+        }
+        g.stroke();
+
+        g.fillColor = new Color(255, 246, 214, 150);
+        g.roundRect(-width / 2 + 34, -height / 2 + 10, width - 68, 8, 4);
+        g.fill();
     }
 
     private buildRankShortcut(layout: AdaptiveLayout, foregroundLiftY: number): void {
@@ -434,6 +484,12 @@ export default class MainPanel extends Component {
         shortcut.getComponent(UITransform)!.setContentSize(new Size(touchW, touchH));
         const rankImage = this.createMenuImage('rankEntryImage', shortcut, 'images/menu_rank_entry', rankW, shortcutH);
         this.createSparkle('rankEntrySparkle', rankImage, scaleLayout(13, layout), -rankW * 0.2, shortcutH * 0.22);
+        const rankLabel = createLabel('rankShortcutLabel', rankImage, '排行榜', scaleLayout(24, layout), new Color(122, 76, 18, 255), true);
+        rankLabel.node.getComponent(UITransform)!.setContentSize(new Size(rankW * 0.82, shortcutH * 0.26));
+        rankLabel.node.setPosition(0, -shortcutH * 0.31, 0);
+        const rankLabelOutline = rankLabel.node.addComponent(LabelOutline);
+        rankLabelOutline.color = new Color(255, 250, 218, 235);
+        rankLabelOutline.width = scaleLayout(1.5, layout);
         addButtonFeedback(shortcut);
         this.rankShortcut = shortcut;
 
@@ -442,7 +498,7 @@ export default class MainPanel extends Component {
 
     private buildRankSideMenu(layout: AdaptiveLayout, shortcutX: number, touchW: number, topY: number): void {
         this.rankMenuDismissLayer = createNode('rankMenuDismissLayer', this.node);
-        this.rankMenuDismissLayer.getComponent(UITransform)!.setContentSize(new Size(layout.width, layout.height));
+        this.rankMenuDismissLayer.getComponent(UITransform)!.setContentSize(new Size(1, 1));
         this.rankMenuDismissLayer.addComponent(BlockInputEvents);
         this.rankMenuDismissLayer.active = false;
 
@@ -464,7 +520,7 @@ export default class MainPanel extends Component {
         bg.stroke();
 
         const entryOffset = (entryH + entryGap) / 2;
-        this.rankLevelEntry = this.createRankMenuTextEntry('rankLevelEntry', menu, '关卡榜', entryOffset, menuW, entryH);
+        this.rankLevelEntry = this.createRankMenuTextEntry('rankLevelEntry', menu, '点名榜', entryOffset, menuW, entryH);
         this.rankSurvivalEntry = this.createRankMenuTextEntry('rankSurvivalEntry', menu, '生存榜', -entryOffset, menuW, entryH);
         this.rankMenu = menu;
         this.rankMenu.active = false;
@@ -772,6 +828,10 @@ export default class MainPanel extends Component {
         }
         if (adPrompt) {
             adPrompt.active = !hasFreeChance;
+            const suffixLabel = adPrompt.getChildByName('survAdPromptSuffix')?.getComponent(Label);
+            if (suffixLabel) {
+                suffixLabel.string = `增加次数 ${GameApp.user.freeSurvivalTime}/2`;
+            }
         }
     }
 
@@ -1004,6 +1064,7 @@ export default class MainPanel extends Component {
             this.closeRankMenu();
             return;
         }
+        this.rankMenuDismissLayer.getComponent(UITransform)?.setContentSize(new Size(getScreenSize().width, getScreenSize().height));
         this.rankMenuDismissLayer.active = true;
         this.rankMenu.active = true;
         this.rankMenuDismissLayer.setSiblingIndex(this.node.children.length - 1);
@@ -1027,6 +1088,7 @@ export default class MainPanel extends Component {
         }
         if (this.rankMenuDismissLayer?.isValid) {
             this.rankMenuDismissLayer.active = false;
+            this.rankMenuDismissLayer.getComponent(UITransform)?.setContentSize(new Size(1, 1));
         }
     }
 

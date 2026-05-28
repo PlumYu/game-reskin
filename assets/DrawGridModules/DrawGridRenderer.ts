@@ -349,7 +349,7 @@ export function installDrawGridRenderer(target: any): void {
 
         this.renderStaticBoard(layout);
 
-        // 清理/重置牛马显示
+        // 清理/重置缺席目标显示
         this.updateCowNodes();
         this.updateBalloonCellNodes();
         // 清理坐标显示
@@ -389,7 +389,7 @@ export function installDrawGridRenderer(target: any): void {
             // 1. 已翻开显示
             if (this.revealedSquares[i]) {
                 if (this.cowPositions[i]) {
-                    // 显示牛
+                    // 显示缺席目标
                     const cowNode = this.getCowNode(i);
                     const visualNode = this.getCowVisualNode(cowNode, i);
                     const visualSprite = visualNode.getComponent(Sprite);
@@ -437,7 +437,7 @@ export function installDrawGridRenderer(target: any): void {
                         visualNode.setPosition(v3(0, this.snapPixelPosition(revealOffsetY), 0));
                     }
                 } else {
-                    // 非牛显示红色 X
+                    // 非目标显示红色 X
                     if (!hasBalloon) {
                         this.drawAnimatedX(xOffset, yOffset, currentSize, this.xAnimationProgress[i], this.WRONG_REVEAL_X_COLOR);
                     }
@@ -927,7 +927,7 @@ export function installDrawGridRenderer(target: any): void {
             sprite.sizeMode = Sprite.SizeMode.CUSTOM;
             sprite.trim = false;
             sprite.spriteFrame = this.getCowRestSpriteFrame(index);
-            // 将牛节点挂在网格节点下
+            // 将目标节点挂在网格节点下
             node.parent = this.node;
             node.setSiblingIndex(20);
             this.cowNodes[index] = node;

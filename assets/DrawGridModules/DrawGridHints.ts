@@ -38,7 +38,7 @@ export function installDrawGridHints(target: any): void {
     },
     getHintColorCowName: function (hex: string): string {
         const colorName = this.getHintColorDisplayName(hex);
-        return colorName === '这种颜色' ? '这种颜色的牛马' : `${colorName}牛马`;
+        return colorName === '这种颜色' ? '这种颜色的缺席目标' : `${colorName}缺席目标`;
     },
     getHintColorCellNameByIndex: function (index: number): string {
         return this.getHintColorCellName(this.gridColors[index]);
@@ -95,7 +95,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '这个格子被你排除了，但它其实就是牛马的位置；点一键应用，把它找出来。';
+                label.string = '这个格子被你排除了，但它其实就是缺席目标的位置；点一键应用，把它点出来。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -178,7 +178,7 @@ export function installDrawGridHints(target: any): void {
 
         const label = this.hintPanelNode.getComponentInChildren(Label);
         if (label) {
-            label.string = `${reasonColorCellName || '这种颜色的格子'}只剩这一个还可能藏牛马，所以牛马就在这里。`;
+            label.string = `${reasonColorCellName || '这种颜色的格子'}只剩这一个还可能是缺席目标，所以缺席目标就在这里。`;
         }
         this.setHintPanelShown(true);
         this.renderGrid();
@@ -212,7 +212,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '这行和这列已经有牛马了；每行每列只能有1只，所以同排同列其他格子都可以排除。';
+                label.string = '这行和这列已经有缺席目标了；每行每列只能有1个，所以同排同列其他座位都可以排除。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -240,7 +240,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '牛马不能挨着牛马；这只牛马周围一圈都不可能再有牛马，可以排除。';
+                label.string = '缺席目标不能挨着缺席目标；这个缺席目标周围一圈都不可能再有缺席目标，可以排除。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -484,7 +484,7 @@ export function installDrawGridHints(target: any): void {
             const colorCellNames = this.joinHintColorCellNames(occupyingColors);
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = `剩下的${colorCellNames}只能分布在这${rows.length}行里；这些行里的其他颜色格子不会有牛马，可以排除。`;
+                label.string = `剩下的${colorCellNames}只能分布在这${rows.length}行里；这些行里的其他颜色座位不会有缺席目标，可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -544,7 +544,7 @@ export function installDrawGridHints(target: any): void {
             const colorCellNames = this.joinHintColorCellNames(occupyingColors);
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = `剩下的${colorCellNames}只能分布在这${cols.length}列里；这些列里的其他颜色格子不会有牛马，可以排除。`;
+                label.string = `剩下的${colorCellNames}只能分布在这${cols.length}列里；这些列里的其他颜色座位不会有缺席目标，可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -621,7 +621,7 @@ export function installDrawGridHints(target: any): void {
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
                 const colorCellName = this.getHintColorCellName(neighborOnlyColor);
-                label.string = `如果这个格子是牛马，旁边的${colorCellName}就没有合法位置了；所以这个格子可以排除。`;
+                label.string = `如果这个格子是缺席目标，旁边的${colorCellName}就没有合法位置了；所以这个格子可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();
