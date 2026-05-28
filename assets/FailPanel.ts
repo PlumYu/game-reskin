@@ -16,7 +16,6 @@ const { ccclass } = _decorator;
 
 const FAIL_RED = new Color(63, 132, 232, 255);
 const GOLD = new Color(255, 207, 42, 255);
-const TEXT_SHADOW = new Color(0, 0, 0, 115);
 const REVIVE_BUTTON_WIDTH = 336;
 const REVIVE_BUTTON_HEIGHT = 96;
 const REVIVE_BUTTON_Y_OFFSET = 150;
@@ -115,8 +114,6 @@ export default class FailPanel extends Component {
 
     private createShadowLabel(name: string, parent: Node, text: string, fontSize: number, color: Color, bold = false): Node {
         const root = createNode(name, parent);
-        const shadow = createLabel(`${name}Shadow`, root, text, fontSize, TEXT_SHADOW, bold);
-        shadow.node.setPosition(3, -4, 0);
         const label = createLabel(`${name}Label`, root, text, fontSize, color, bold);
         label.node.setPosition(0, 0, 0);
         return root;

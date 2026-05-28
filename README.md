@@ -223,14 +223,20 @@
 - 胜利结算和成功反馈也可能在 `WinPanel.ts` 或 `DrawGridModules` 里。
 - 只改 `FailPanel.ts` 会漏掉每日挑战失败、生存失败、普通胜利等页面。
 - 这些页面通常是代码 `Graphics` 绘制，不一定有独立图片资源可换。
+- 失败页大标题、统计数字等不建议额外叠黑色文字阴影；小屏里阴影容易像“多了一层脏字”，尤其是 `未点到 6` 这类数字。
 
 ### 13. 提示框和设置弹窗也算换皮范围
 
 - 通用提示框：`assets/PopupPanel.ts`
 - 设置弹窗：`assets/SettingPanel.ts`
 - 提示购买/解锁弹窗：`assets/DrawGridModules/DrawGridHud.ts`
+- 提示解锁大图资源：
+  - `assets/RemoteBundle/guide/second_hint_unlock.png`
+  - `assets/RemoteBundle/guide/fourth_hint_unlock.png`
+- 关卡内点击 `点名册/提示` 后弹出的购买面板，不走 `PopupPanel.ts`，而是 `DrawGridHud.ts` 里的 `HintPurchasePanel`。
+- 第 2 关/第 4 关触发的提示解锁页，主要显示的是 `RemoteBundle/guide` 下的整张 PNG；只改代码文案不会改变这两页视觉。
 - 这些弹窗容易被漏掉，因为它们不是首页资源，也不一定在截图第一眼出现。
-- 每个主题至少要打开一次设置、提示、退出确认，检查是否仍是原版 UI 和旧文案。
+- 每个主题至少要打开一次设置、提示、退出确认、提示购买面板，并触发一次提示解锁页，检查是否仍是原版 UI、旧主题图片或旧文案。
 
 ### 14. 广告和分享失败不能静默
 

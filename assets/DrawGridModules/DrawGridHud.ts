@@ -1684,7 +1684,7 @@ export function installDrawGridHud(target: any): void {
     getHintKindDescription: function (kind: HintKind): string {
         return kind === 'cow'
             ? '使用点名册，可以直接确认\n一个缺席位置。'
-            : '卡住了？立刻显示\n您的下一步。';
+            : '卡住了？立刻排除\n一批错误座位。';
     },
     applyHintPurchaseIcon: function (card: Node, kind: HintKind): void {
         const iconNode = card.getChildByName('HintPurchaseVisualPanel')?.getChildByName('HintPurchaseIcon');
@@ -1733,6 +1733,74 @@ export function installDrawGridHud(target: any): void {
             if (toast.isValid) toast.destroy();
         }).start();
     },
+    drawHintPurchaseVisualBackdrop: function (visualPanel: Node, kind: HintKind): void {
+        const g = visualPanel.getComponent(Graphics) || visualPanel.addComponent(Graphics);
+        g.clear();
+        g.fillColor = new Color(232, 244, 255, 255);
+        g.roundRect(-226, -116, 452, 232, 28);
+        g.fill();
+        g.strokeColor = new Color(139, 190, 238, 210);
+        g.lineWidth = 3;
+        g.roundRect(-224, -114, 448, 228, 26);
+        g.stroke();
+
+        g.strokeColor = new Color(178, 216, 246, 135);
+        g.lineWidth = 2;
+        for (let y = 70; y >= -70; y -= 46) {
+            g.moveTo(-190, y);
+            g.lineTo(190, y);
+        }
+        g.stroke();
+
+        const cell = 34;
+        const gap = 8;
+        const startX = -cell * 1.5 - gap;
+        const startY = cell + gap;
+        const colors = [
+            new Color(139, 177, 233, 255),
+            new Color(179, 216, 242, 255),
+            new Color(196, 229, 209, 255),
+            new Color(255, 218, 126, 255),
+            new Color(226, 205, 241, 255),
+            new Color(164, 207, 224, 255),
+            new Color(229, 236, 242, 255),
+            new Color(202, 224, 248, 255),
+            new Color(246, 230, 171, 255),
+        ];
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                const idx = row * 3 + col;
+                const x = startX + col * (cell + gap);
+                const y = startY - row * (cell + gap);
+                g.fillColor = colors[idx];
+                g.roundRect(x, y, cell, cell, 8);
+                g.fill();
+                g.fillColor = new Color(255, 255, 255, 155);
+                g.roundRect(x + 7, y + 7, cell - 14, 7, 4);
+                g.fill();
+            }
+        }
+
+        if (kind === 'cow') {
+            g.strokeColor = new Color(255, 199, 40, 255);
+            g.lineWidth = 6;
+            g.roundRect(startX + cell + gap - 4, startY - cell - gap - 4, cell + 8, cell + 8, 10);
+            g.stroke();
+        } else {
+            g.strokeColor = new Color(239, 82, 88, 255);
+            g.lineWidth = 5;
+            const markCells = [[0, 1], [2, 0], [2, 2]];
+            for (const pos of markCells) {
+                const x = startX + pos[1] * (cell + gap);
+                const y = startY - pos[0] * (cell + gap);
+                g.moveTo(x + 9, y + 9);
+                g.lineTo(x + cell - 9, y + cell - 9);
+                g.moveTo(x + cell - 9, y + 9);
+                g.lineTo(x + 9, y + cell - 9);
+            }
+            g.stroke();
+        }
+    },
     openHintPurchasePanel: function (kind: HintKind): void {
         const canvas = director.getScene()?.getChildByName('Canvas') || this.node.parent || this.node;
         if (!canvas) return;
@@ -1754,43 +1822,51 @@ export function installDrawGridHud(target: any): void {
             this.closeHintPurchasePanel();
         }, this);
 
-        const card = createRoundedCard('HintPurchaseCard', root, 510, 540, new Color(255, 255, 255, 252), 28, 5, 38);
+        const card = createRoundedCard('HintPurchaseCard', root, 536, 596, new Color(248, 252, 255, 252), 30, 4, 34);
         card.setPosition(0, 0, 0);
         this.blockNodeTouch(card);
 
-        const title = createLabel('HintPurchaseTitle', card, '', 34, new Color(42, 62, 100, 255), true);
-        title.node.getComponent(CcUITransform)?.setContentSize(430, 50);
+        const headerBand = createNode('HintPurchaseHeaderBand', card);
+        headerBand.getComponent(CcUITransform)?.setContentSize(448, 76);
+        headerBand.setPosition(0, 224, 0);
+        const headerG = headerBand.addComponent(Graphics);
+        headerG.fillColor = new Color(74, 146, 226, 255);
+        headerG.roundRect(-224, -38, 448, 76, 22);
+        headerG.fill();
+        headerG.fillColor = new Color(255, 255, 255, 45);
+        headerG.roundRect(-206, 5, 412, 20, 10);
+        headerG.fill();
+
+        const title = createLabel('HintPurchaseTitle', card, '', 38, COLOR_WHITE, true);
+        title.node.getComponent(CcUITransform)?.setContentSize(390, 58);
         title.node.setPosition(0, 224, 0);
 
-        const desc = createLabel('HintPurchaseDesc', card, '', 25, new Color(112, 130, 145, 255));
-        desc.node.getComponent(CcUITransform)?.setContentSize(450, 72);
+        const desc = createLabel('HintPurchaseDesc', card, '', 26, new Color(59, 95, 143, 255), true);
+        desc.node.getComponent(CcUITransform)?.setContentSize(450, 74);
         desc.node.setPosition(0, 154, 0);
-        desc.lineHeight = 32;
+        desc.lineHeight = 34;
         desc.overflow = Label.Overflow.SHRINK;
 
         const visualPanel = createNode('HintPurchaseVisualPanel', card);
-        visualPanel.getComponent(CcUITransform)?.setContentSize(438, 220);
-        visualPanel.setPosition(0, -32, 0);
-        const visualG = visualPanel.addComponent(Graphics);
-        visualG.fillColor = new Color(102, 113, 164, 255);
-        visualG.roundRect(-219, -110, 438, 220, 28);
-        visualG.fill();
+        visualPanel.getComponent(CcUITransform)?.setContentSize(452, 232);
+        visualPanel.setPosition(0, 8, 0);
+        this.drawHintPurchaseVisualBackdrop?.(visualPanel, kind);
 
         const iconNode = createNode('HintPurchaseIcon', visualPanel);
         iconNode.getComponent(CcUITransform)?.setContentSize(136, 136);
-        iconNode.setPosition(0, 0, 0);
+        iconNode.setPosition(96, 0, 0);
         iconNode.addComponent(Sprite);
 
         const buyBtn = createNode('HintPurchaseBuyBtn', card);
-        buyBtn.getComponent(CcUITransform)?.setContentSize(190, 64);
-        buyBtn.setPosition(-112, -188, 0);
+        buyBtn.getComponent(CcUITransform)?.setContentSize(204, 68);
+        buyBtn.setPosition(-118, -226, 0);
         const buyG = buyBtn.addComponent(Graphics);
         buyG.fillColor = new Color(54, 139, 232, 255);
-        buyG.roundRect(-95, -32, 190, 64, 32);
+        buyG.roundRect(-102, -34, 204, 68, 34);
         buyG.fill();
         buyG.strokeColor = new Color(158, 220, 255, 230);
         buyG.lineWidth = 3;
-        buyG.roundRect(-92, -29, 184, 58, 29);
+        buyG.roundRect(-99, -31, 198, 62, 31);
         buyG.stroke();
         const coinIcon = createNode('HintPurchaseCoinIcon', buyBtn);
         coinIcon.getComponent(CcUITransform)?.setContentSize(34, 34);
@@ -1812,15 +1888,15 @@ export function installDrawGridHud(target: any): void {
         }, this);
 
         const adBtn = createNode('HintPurchaseAdBtn', card);
-        adBtn.getComponent(CcUITransform)?.setContentSize(190, 64);
-        adBtn.setPosition(112, -188, 0);
+        adBtn.getComponent(CcUITransform)?.setContentSize(204, 68);
+        adBtn.setPosition(118, -226, 0);
         const adG = adBtn.addComponent(Graphics);
         adG.fillColor = new Color(255, 171, 22, 255);
-        adG.roundRect(-95, -32, 190, 64, 32);
+        adG.roundRect(-102, -34, 204, 68, 34);
         adG.fill();
         adG.strokeColor = new Color(255, 220, 124, 230);
         adG.lineWidth = 3;
-        adG.roundRect(-92, -29, 184, 58, 29);
+        adG.roundRect(-99, -31, 198, 62, 31);
         adG.stroke();
         const playIcon = createNode('HintPurchasePlayIcon', adBtn);
         playIcon.getComponent(CcUITransform)?.setContentSize(42, 32);
@@ -1846,7 +1922,7 @@ export function installDrawGridHud(target: any): void {
 
         const closeBtn = createNode('HintPurchaseCloseBtn', card);
         closeBtn.getComponent(CcUITransform)?.setContentSize(58, 58);
-        closeBtn.setPosition(218, 224, 0);
+        closeBtn.setPosition(220, 250, 0);
         const closeG = closeBtn.addComponent(Graphics);
         closeG.fillColor = new Color(236, 242, 252, 255);
         closeG.circle(0, 0, 29);
