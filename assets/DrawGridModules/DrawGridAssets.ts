@@ -425,7 +425,7 @@ export function installDrawGridAssets(target: any): void {
                     this.setDebugLevelLoadStatus(`已加载 ${path} / n=${data.n}`);
                     this.applyLevelConfig(data);
                     this.finishInitGrid();
-                    // 第一关：默认显示一只牛（揭示第二只）
+                    // 第一关：默认显示一个目标（揭示第二个）
                     if (this.currentLevel === 1) {
                         const cowIndices = this.cowPositions.map((b, i) => b ? i : -1).filter(i => i >= 0);
                         if (cowIndices.length >= 2) {
@@ -545,14 +545,39 @@ export function installDrawGridAssets(target: any): void {
     },
     ensureHeartVisual: function (heartNode: Node): void {
         const sprite = heartNode.getComponent(Sprite);
-        if (!sprite || !sprite.spriteFrame) {
-            throw new Error(`[DrawGrid] heart sprite missing: ${heartNode.name}`);
-        }
-        sprite.enabled = true;
-        sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-        sprite.trim = false;
-        heartNode.getComponent(CcUITransform)?.setContentSize(42, 39);
-        heartNode.getComponent(Graphics)?.clear();
+        heartNode.getComponent(CcUITransform)?.setContentSize(46, 40);
+        const graphics = heartNode.getComponent(Graphics) || heartNode.addComponent(Graphics);
+        graphics.clear();
+        if (sprite) sprite.enabled = false;
+
+        graphics.fillColor = new Color(28, 63, 80, 72);
+        graphics.roundRect(-20, -17, 40, 30, 7);
+        graphics.fill();
+        graphics.fillColor = new Color(255, 248, 222, 255);
+        graphics.roundRect(-21, -14, 42, 30, 7);
+        graphics.fill();
+        graphics.strokeColor = new Color(28, 120, 130, 255);
+        graphics.lineWidth = 2.5;
+        graphics.roundRect(-21, -14, 42, 30, 7);
+        graphics.stroke();
+
+        graphics.fillColor = new Color(28, 120, 130, 255);
+        graphics.roundRect(-18, 4, 36, 8, 4);
+        graphics.fill();
+        graphics.fillColor = new Color(245, 188, 64, 255);
+        graphics.circle(0, 4, 4);
+        graphics.fill();
+
+        graphics.strokeColor = new Color(214, 151, 42, 255);
+        graphics.lineWidth = 3;
+        graphics.lineCap = Graphics.LineCap.ROUND;
+        graphics.moveTo(-9, -5);
+        graphics.lineTo(9, -5);
+        graphics.moveTo(-6, -5);
+        graphics.lineTo(-6, -11);
+        graphics.moveTo(6, -5);
+        graphics.lineTo(6, -11);
+        graphics.stroke();
     },
     });
 }

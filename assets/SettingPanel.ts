@@ -5,8 +5,8 @@ import SfxManager from './Core/SfxManager';
 import CountdownController from './Core/CountdownController';
 import {
     createNode, createLabel, createFullScreenOverlay, getScreenSize, addButtonFeedback,
-    COLOR_DARK_BLUE, COLOR_WHITE, COLOR_RED, COLOR_TITLE_NAVY,
-    COLOR_TOGGLE_BLUE, COLOR_TOGGLE_GRAY, COLOR_SETTING_BG,
+    COLOR_WHITE,
+    COLOR_TOGGLE_BLUE, COLOR_TOGGLE_GRAY,
 } from './Utils/UIBuilder';
 
 const { ccclass } = _decorator;
@@ -32,7 +32,7 @@ export default class SettingPanel extends Component {
     private backBtn: Node | null = null;
     private survivalExitConfirmRoot: Node | null = null;
 
-    private readonly settingCardY = 100;
+    private readonly settingCardY = 82;
 
     public isInGame: boolean = false;
 
@@ -46,52 +46,58 @@ export default class SettingPanel extends Component {
         const ut = this.node.getComponent(UITransform)!;
         ut.setContentSize(screenSize);
 
-        createFullScreenOverlay('bgOverlay', this.node, new Color(0, 0, 0, 255), 160);
+        createFullScreenOverlay('bgOverlay', this.node, new Color(7, 18, 28, 255), 168);
 
         const card = createNode('card', this.node);
         card.setPosition(0, this.settingCardY, 0);
-        card.setScale(v3(1.25, 1.25, 1));
-        const cardW = 360;
-        const cardH = 470;
+        card.setScale(v3(1.16, 1.16, 1));
+        const cardW = 398;
+        const cardH = 506;
         const cardUt = card.getComponent(UITransform)!;
         cardUt.setContentSize(new Size(cardW, cardH));
 
         const cardG = card.addComponent(Graphics);
-        cardG.fillColor = new Color(25, 38, 72, 42);
+        cardG.fillColor = new Color(22, 56, 66, 54);
         cardG.roundRect(-cardW / 2 + 8, -cardH / 2 - 10, cardW - 16, cardH, 32);
         cardG.fill();
-        cardG.fillColor = COLOR_SETTING_BG;
+        cardG.fillColor = new Color(247, 251, 247, 255);
         cardG.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, 30);
+        cardG.fill();
+        cardG.fillColor = new Color(44, 127, 139, 255);
+        cardG.roundRect(-cardW / 2 + 24, cardH / 2 - 94, cardW - 48, 66, 20);
+        cardG.fill();
+        cardG.fillColor = new Color(255, 255, 255, 72);
+        cardG.roundRect(-cardW / 2 + 42, cardH / 2 - 48, cardW - 84, 8, 4);
         cardG.fill();
 
         // 标题
-        const title = createLabel('title', card, '设置', 32, COLOR_TITLE_NAVY, true);
-        title.node.setPosition(0, cardH / 2 - 54, 0);
+        const title = createLabel('title', card, '阅览设置', 32, COLOR_WHITE, true);
+        title.node.setPosition(0, cardH / 2 - 62, 0);
 
         // 背景音乐 toggle
-        this.bgmToggle = this.buildToggleRow(card, 'music', cardH / 2 - 132, SfxManager.instance.isBgmEnabled());
+        this.bgmToggle = this.buildToggleRow(card, 'music', cardH / 2 - 150, SfxManager.instance.isBgmEnabled());
         this.bgmDot = this.bgmToggle.getChildByName('dot')!;
         this.bgmStatusLabel = this.bgmToggle.getChildByName('status')!.getComponent(Label)!;
 
         // 游戏音效 toggle
-        this.sfxToggle = this.buildToggleRow(card, 'sound', cardH / 2 - 218, SfxManager.instance.isSfxEnabled());
+        this.sfxToggle = this.buildToggleRow(card, 'sound', cardH / 2 - 238, SfxManager.instance.isSfxEnabled());
         this.sfxDot = this.sfxToggle.getChildByName('dot')!;
         this.sfxStatusLabel = this.sfxToggle.getChildByName('status')!.getComponent(Label)!;
 
-        this.vibrateToggle = this.buildToggleRow(card, 'vibrate', cardH / 2 - 304, SfxManager.instance.isVibrateEnabled());
+        this.vibrateToggle = this.buildToggleRow(card, 'vibrate', cardH / 2 - 326, SfxManager.instance.isVibrateEnabled());
         this.vibrateDot = this.vibrateToggle.getChildByName('dot')!;
         this.vibrateStatusLabel = this.vibrateToggle.getChildByName('status')!.getComponent(Label)!;
 
         // 游戏内只保留退出按钮；关闭叉负责关闭设置并继续游戏。
         if (this.isInGame) {
             const backNode = createNode('backBtn', card);
-            backNode.setPosition(0, -cardH / 2 + 48, 0);
+            backNode.setPosition(0, -cardH / 2 + 50, 0);
             const backUt = backNode.getComponent(UITransform)!;
             const backW = 168;
             const backH = 56;
             backUt.setContentSize(new Size(backW, backH));
             const backG = backNode.addComponent(Graphics);
-            backG.fillColor = new Color(228, 78, 83, 245);
+            backG.fillColor = new Color(222, 86, 66, 245);
             backG.roundRect(-backW / 2, -backH / 2, backW, backH, 18);
             backG.fill();
             createLabel('backLabel', backNode, '退出游戏', 22, COLOR_WHITE, true);
@@ -99,16 +105,16 @@ export default class SettingPanel extends Component {
         }
 
         // 关闭按钮（圆形 X）
-        const closeBtnY = -cardH / 2 - 58;
+        const closeBtnY = -cardH / 2 - 54;
         const closeNode = createNode('closeBtn', card);
         closeNode.setPosition(0, closeBtnY, 0);
         const closeUt = closeNode.getComponent(UITransform)!;
         closeUt.setContentSize(new Size(64, 64));
         const closeG = closeNode.addComponent(Graphics);
-        closeG.fillColor = new Color(255, 118, 105, 255);
+        closeG.fillColor = new Color(44, 127, 139, 255);
         closeG.circle(0, 0, 32);
         closeG.fill();
-        closeG.strokeColor = new Color(255, 224, 219, 255);
+        closeG.strokeColor = new Color(222, 246, 240, 255);
         closeG.lineWidth = 3;
         closeG.circle(0, 0, 29);
         closeG.stroke();
@@ -128,27 +134,27 @@ export default class SettingPanel extends Component {
     private buildToggleRow(parent: Node, type: 'music' | 'sound' | 'vibrate', yPos: number, initialState: boolean): Node {
         const row = createNode('row_' + type, parent);
         row.setPosition(0, yPos, 0);
-        row.getComponent(UITransform)!.setContentSize(new Size(308, 78));
+        row.getComponent(UITransform)!.setContentSize(new Size(328, 78));
 
         const rowG = row.addComponent(Graphics);
-        rowG.fillColor = new Color(255, 255, 255, 225);
-        rowG.roundRect(-154, -39, 308, 78, 24);
+        rowG.fillColor = new Color(255, 255, 250, 245);
+        rowG.roundRect(-164, -39, 328, 78, 22);
         rowG.fill();
-        rowG.strokeColor = new Color(198, 211, 238, 160);
+        rowG.strokeColor = new Color(178, 215, 210, 210);
         rowG.lineWidth = 1;
-        rowG.roundRect(-154, -39, 308, 78, 24);
+        rowG.roundRect(-164, -39, 328, 78, 22);
         rowG.stroke();
 
         this.createSettingIcon(row, type);
         const labelText = type === 'music' ? '背景音乐' : (type === 'sound' ? '按键音效' : '震动反馈');
-        const nameLabel = createLabel('name', row, labelText, 22, COLOR_TITLE_NAVY, true);
-        nameLabel.node.setPosition(-34, 0, 0);
+        const nameLabel = createLabel('name', row, labelText, 22, new Color(31, 70, 76, 255), true);
+        nameLabel.node.setPosition(-28, 0, 0);
 
         // toggle 轨道
         const trackW = 72;
         const trackH = 34;
         const track = createNode('track', row);
-        track.setPosition(56, 0, 0);
+        track.setPosition(68, 0, 0);
         const trackUt = track.getComponent(UITransform)!;
         trackUt.setContentSize(new Size(trackW, trackH));
 
@@ -160,7 +166,7 @@ export default class SettingPanel extends Component {
 
         // toggle 圆点
         const dot = createNode('dot', row);
-        const dotX = initialState ? 74 : 38;
+        const dotX = initialState ? 86 : 50;
         dot.setPosition(dotX, 0, 0);
         const dotG = dot.addComponent(Graphics);
         dotG.fillColor = COLOR_WHITE;
@@ -169,18 +175,18 @@ export default class SettingPanel extends Component {
 
         // 状态文字
         const status = createLabel('status', row, initialState ? '开' : '关', 18, initialState ? COLOR_TOGGLE_BLUE : COLOR_TOGGLE_GRAY);
-        status.node.setPosition(108, 0, 0);
+        status.node.setPosition(124, 0, 0);
 
         return row;
     }
 
     private createSettingIcon(parent: Node, type: 'music' | 'sound' | 'vibrate'): void {
         const icon = createNode(`${type}Icon`, parent);
-        icon.setPosition(-110, 0, 0);
+        icon.setPosition(-122, 0, 0);
         icon.getComponent(UITransform)!.setContentSize(new Size(48, 48));
 
         const g = icon.addComponent(Graphics);
-        g.fillColor = new Color(225, 235, 255, 255);
+        g.fillColor = new Color(224, 243, 236, 255);
         g.circle(0, 0, 24);
         g.fill();
 
@@ -319,7 +325,7 @@ export default class SettingPanel extends Component {
         trackG.roundRect(-trackW / 2, -trackH / 2, trackW, trackH, trackH / 2);
         trackG.fill();
 
-        const targetX = enabled ? 74 : 38;
+        const targetX = enabled ? 86 : 50;
         tween(dot).to(0.15, { position: v3(targetX, 0, 0) }).start();
 
         statusLabel.string = enabled ? '开' : '关';
@@ -362,14 +368,14 @@ export default class SettingPanel extends Component {
         const cardH = 560;
         card.getComponent(UITransform)!.setContentSize(new Size(cardW, cardH));
         const cardG = card.addComponent(Graphics);
-        cardG.fillColor = new Color(32, 42, 60, 42);
+        cardG.fillColor = new Color(22, 56, 66, 54);
         cardG.roundRect(-cardW / 2 + 8, -cardH / 2 - 10, cardW - 16, cardH, 44);
         cardG.fill();
-        cardG.fillColor = new Color(255, 255, 255, 255);
+        cardG.fillColor = new Color(248, 252, 248, 255);
         cardG.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, 44);
         cardG.fill();
 
-        const title = createLabel('SurvivalExitTitle', card, '提示!', 42, new Color(92, 96, 105, 255), true);
+        const title = createLabel('SurvivalExitTitle', card, '离开阅览？', 40, new Color(31, 70, 76, 255), true);
         title.node.setPosition(0, cardH / 2 - 76, 0);
 
         const messageBox = createNode('SurvivalExitMessageBox', card);
@@ -378,15 +384,15 @@ export default class SettingPanel extends Component {
         messageBox.setPosition(0, 62, 0);
         messageBox.getComponent(UITransform)!.setContentSize(new Size(messageW, messageH));
         const messageG = messageBox.addComponent(Graphics);
-        messageG.fillColor = new Color(239, 240, 242, 255);
+        messageG.fillColor = new Color(232, 245, 240, 255);
         messageG.roundRect(-messageW / 2, -messageH / 2, messageW, messageH, 28);
         messageG.fill();
 
-        const question = createLabel('SurvivalExitQuestion', messageBox, '确定要退出吗?', 28, new Color(108, 112, 122, 255), true);
+        const question = createLabel('SurvivalExitQuestion', messageBox, '确定退出本次找占座吗?', 27, new Color(31, 70, 76, 255), true);
         question.node.getComponent(UITransform)!.setContentSize(new Size(messageW - 50, 44));
         question.node.setPosition(0, 26, 0);
 
-        const warning = createLabel('SurvivalExitWarning', messageBox, '主动退出将直接结算本次挑战!', 25, new Color(235, 58, 58, 255), true);
+        const warning = createLabel('SurvivalExitWarning', messageBox, '退出后会立即结算本次挑战', 25, new Color(214, 90, 56, 255), true);
         warning.node.getComponent(UITransform)!.setContentSize(new Size(messageW - 44, 46));
         warning.node.setPosition(0, -22, 0);
         warning.overflow = Label.Overflow.SHRINK;
@@ -397,13 +403,13 @@ export default class SettingPanel extends Component {
         const settleH = 76;
         settleBtn.getComponent(UITransform)!.setContentSize(new Size(settleW, settleH));
         const settleG = settleBtn.addComponent(Graphics);
-        settleG.fillColor = new Color(154, 54, 52, 72);
+        settleG.fillColor = new Color(21, 83, 94, 72);
         settleG.roundRect(-settleW / 2 + 3, -settleH / 2 - 6, settleW - 6, settleH, 30);
         settleG.fill();
-        settleG.fillColor = new Color(232, 74, 67, 255);
+        settleG.fillColor = new Color(44, 127, 139, 255);
         settleG.roundRect(-settleW / 2, -settleH / 2, settleW, settleH, 30);
         settleG.fill();
-        createLabel('SurvivalExitSettleLabel', settleBtn, '结算', 32, COLOR_WHITE, true);
+        createLabel('SurvivalExitSettleLabel', settleBtn, '确认结算', 30, COLOR_WHITE, true);
         addButtonFeedback(settleBtn);
         settleBtn.on(Node.EventType.TOUCH_END, this.onConfirmSurvivalExit, this);
 
@@ -411,7 +417,7 @@ export default class SettingPanel extends Component {
         closeNode.setPosition(0, -330, 0);
         closeNode.getComponent(UITransform)!.setContentSize(new Size(72, 72));
         const closeG = closeNode.addComponent(Graphics);
-        closeG.fillColor = new Color(26, 34, 48, 178);
+        closeG.fillColor = new Color(31, 70, 76, 196);
         closeG.circle(0, 0, 34);
         closeG.fill();
         closeG.strokeColor = new Color(255, 255, 255, 245);

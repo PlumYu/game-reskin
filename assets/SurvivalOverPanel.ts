@@ -20,9 +20,9 @@ const { ccclass } = _decorator;
 
 const PANEL_WIDTH = 640;
 const PANEL_HEIGHT = 1030;
-const GREEN_REVIVE = new Color(132, 204, 14, 255);
-const BLUE_RESTART = new Color(36, 181, 232, 255);
-const BLUE_DOUBLE = new Color(52, 139, 236, 255);
+const GREEN_REVIVE = new Color(42, 164, 126, 255);
+const BLUE_RESTART = new Color(42, 126, 139, 255);
+const BLUE_DOUBLE = new Color(66, 139, 206, 255);
 const WHITE_BUTTON = new Color(255, 255, 255, 255);
 const GOLD_TEXT = new Color(255, 214, 54, 255);
 const RED_TEXT = new Color(255, 66, 64, 255);
@@ -126,7 +126,7 @@ export default class SurvivalOverPanel extends Component {
             g.fill();
         }
 
-        const title = createLabel('SurvivalSettlementTitle', parent, '关卡结算', 70, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
+        const title = createLabel('SurvivalSettlementTitle', parent, this.isWin ? '占座生存成功' : '占座生存失败', 62, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
         title.node.setPosition(0, 248, 0);
         this.setLabelSize(title, 600, 92);
         this.addTextOutline(title, this.isWin ? new Color(255, 255, 255, 230) : new Color(66, 66, 66, 230), this.isWin ? 5 : 7);
@@ -180,13 +180,13 @@ export default class SurvivalOverPanel extends Component {
         found.setPosition(0, 114, 0);
         found.getComponent(UITransform)!.setContentSize(new Size(570, 64));
         this.createMenuIdleMascot(found, -188, 0, 58, 58);
-        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '找到了', 34, COLOR_WHITE, true);
+        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '揪出了', 34, COLOR_WHITE, true);
         foundPrefix.node.setPosition(-70, 0, 0);
         this.setLabelSize(foundPrefix, 150, 50);
         const foundNumber = createLabel('SurvivalFoundNumber', found, `${this.settlementFoundCowNum}`, 44, RED_TEXT, true);
         foundNumber.node.setPosition(43, 0, 0);
         this.setLabelSize(foundNumber, 58, 58);
-        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '只牛', 34, COLOR_WHITE, true);
+        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '处占座', 34, COLOR_WHITE, true);
         foundSuffix.node.setPosition(123, 0, 0);
         this.setLabelSize(foundSuffix, 100, 50);
 
@@ -200,7 +200,7 @@ export default class SurvivalOverPanel extends Component {
 
         this.drawDivider(parent, 0, -52, 430);
 
-        const beat = createLabel('SurvivalBeatText', parent, `击败了 ${this.getBeatPercent()} 的玩家`, 43, GOLD_TEXT, true);
+        const beat = createLabel('SurvivalBeatText', parent, `超过了 ${this.getBeatPercent()} 的找占座玩家`, 38, GOLD_TEXT, true);
         beat.node.setPosition(0, -106, 0);
         this.setLabelSize(beat, 610, 60);
     }
@@ -216,7 +216,7 @@ export default class SurvivalOverPanel extends Component {
     }
 
     private createActions(parent: Node): void {
-        const reviveText = GameApp.survivalReviveTime > 0 ? '复活' : '复活已用';
+        const reviveText = GameApp.survivalReviveTime > 0 ? '复活找占座' : '复活已用';
         this.reviveBtn = this.createPillButton('SurvivalReviveBtn', parent, reviveText, '+60秒', REVIVE_BUTTON_WIDTH, 106, 0, -326, GameApp.survivalReviveTime > 0 ? 'revive' : 'disabled', GameApp.survivalReviveTime > 0, 'clock');
         if (GameApp.survivalReviveTime <= 0) {
             this.setButtonDisabled(this.reviveBtn);
@@ -224,14 +224,14 @@ export default class SurvivalOverPanel extends Component {
 
         const restartSub = GameApp.user.freeSurvivalTime > 0
             ? `今日免费${GameApp.user.freeSurvivalTime}/2次`
-            : '看广告继续挑战';
-        this.restartBtn = this.createPillButton('SurvivalRestartBtn', parent, '重新挑战', restartSub, 342, 86, 0, -442, 'restart', GameApp.user.freeSurvivalTime <= 0, null);
+            : '看广告继续找占座';
+        this.restartBtn = this.createPillButton('SurvivalRestartBtn', parent, '重新找占座', restartSub, 342, 86, 0, -442, 'restart', GameApp.user.freeSurvivalTime <= 0, null);
 
         this.doubleStaminaBtn = this.createPillButton('SurvivalDoubleStaminaBtn', parent, '双倍体力', '', 282, 74, -154, -548, 'double', true, 'lightning');
         this.doubleButtonTitle = this.doubleStaminaBtn.getChildByName('title')?.getComponent(Label) || null;
         this.doubleButtonSub = this.doubleStaminaBtn.getChildByName('subtitle')?.getComponent(Label) || null;
 
-        this.friendBtn = this.createPillButton('SurvivalFriendBtn', parent, '求助好友', '', 282, 74, 154, -548, 'friend', false, 'share');
+        this.friendBtn = this.createPillButton('SurvivalFriendBtn', parent, '求助同学', '', 282, 74, 154, -548, 'friend', false, 'share');
     }
 
     private createPillButton(
@@ -712,9 +712,9 @@ export default class SurvivalOverPanel extends Component {
 
     private getResultLine(): string {
         if (this.settlementPassLevel < 10) {
-            return '你没撑过第十轮!';
+            return `止步第 ${this.settlementPassLevel || 1} 轮占座挑战`;
         }
-        return '恭喜通过第十轮！';
+        return '成功守住十轮自习位';
     }
 
     private getBeatPercent(): string {

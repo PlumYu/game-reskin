@@ -474,7 +474,7 @@ export function installDrawGridInputFlow(target: any): void {
         this.xAnimationProgress[index] = 0;
 
         if (this.cowPositions[index]) {
-            // 牛的出现动画
+            // 目标的出现动画
             this.cowsFound++;
             const remainingAfterReveal = Math.max(0, this.totalCows - this.cowsFound);
             this.updateRemainingLabel();
@@ -490,7 +490,7 @@ export function installDrawGridInputFlow(target: any): void {
                     : '锁定一个';
             this.showCellWorkplaceFeedback(successText, index, new Color(255, 238, 92, 255), true);
 
-            // 生存模式时间奖励要立即生效，避免等牛出现动画结束才跳时间。
+                // 生存模式时间奖励要立即生效，避免等目标出现动画结束才跳时间。
             if (GameApp.gameMode === GameMode.survival) {
                 const cdc = GameApp.countDownControl as CountdownController | null;
                 if (cdc) {
@@ -526,7 +526,7 @@ export function installDrawGridInputFlow(target: any): void {
                 return;
             }
 
-            // 非牛显示红 X
+            // 非目标显示红 X
             SfxManager.instance.playRevealFail();
             SfxManager.instance.vibrateRevealCell();
             this.playJellyPressFeedback(index, 'mistake');

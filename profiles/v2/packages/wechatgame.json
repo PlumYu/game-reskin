@@ -7,10 +7,11 @@
         "enable": false
       },
       "buildPath": "project://build",
-      "outputName": "wechatgame",
+      "outputName": "wechatgame-tsgbzz",
       "mainBundleCompressionType": "merge_dep",
       "platform": "wechatgame",
-      "useSplashScreen": true
+      "useSplashScreen": true,
+      "name": "tsgbzz"
     },
     "taskOptionsMap": {
       "wechat-local-playable": {
@@ -44,6 +45,46 @@
         "__version__": "1.0.4"
       },
       "1779447830302": {
+        "orientation": "portrait",
+        "appid": "wx1e65e444ba84aec1",
+        "buildOpenDataContextTemplate": "",
+        "separateEngine": false,
+        "highPerformanceMode": false,
+        "__version__": "1.0.4"
+      },
+      "1779959569468": {
+        "orientation": "portrait",
+        "appid": "wx1e65e444ba84aec1",
+        "buildOpenDataContextTemplate": "",
+        "separateEngine": false,
+        "highPerformanceMode": false,
+        "__version__": "1.0.4"
+      },
+      "1779961527277": {
+        "orientation": "portrait",
+        "appid": "wx1e65e444ba84aec1",
+        "buildOpenDataContextTemplate": "",
+        "separateEngine": false,
+        "highPerformanceMode": false,
+        "__version__": "1.0.4"
+      },
+      "1779963054400": {
+        "orientation": "portrait",
+        "appid": "wx1e65e444ba84aec1",
+        "buildOpenDataContextTemplate": "",
+        "separateEngine": false,
+        "highPerformanceMode": false,
+        "__version__": "1.0.4"
+      },
+      "1779964111844": {
+        "orientation": "portrait",
+        "appid": "wx1e65e444ba84aec1",
+        "buildOpenDataContextTemplate": "",
+        "separateEngine": false,
+        "highPerformanceMode": false,
+        "__version__": "1.0.4"
+      },
+      "1780018365397": {
         "orientation": "portrait",
         "appid": "wx1e65e444ba84aec1",
         "buildOpenDataContextTemplate": "",

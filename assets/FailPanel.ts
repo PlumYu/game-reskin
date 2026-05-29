@@ -13,9 +13,11 @@ import {
 
 const { ccclass } = _decorator;
 
-const FAIL_RED = new Color(248, 60, 52, 255);
-const GOLD = new Color(255, 207, 42, 255);
-const TEXT_SHADOW = new Color(0, 0, 0, 115);
+const FAIL_RED = new Color(224, 86, 62, 255);
+const GOLD = new Color(246, 185, 66, 255);
+const LIBRARY_TEAL = new Color(42, 126, 139, 255);
+const LIBRARY_NAVY = new Color(33, 62, 82, 255);
+const TEXT_SHADOW = new Color(12, 38, 48, 115);
 const REVIVE_BUTTON_WIDTH = 336;
 const REVIVE_BUTTON_HEIGHT = 96;
 const REVIVE_BUTTON_Y_OFFSET = 150;
@@ -51,23 +53,23 @@ export default class FailPanel extends Component {
         const heartGap = 286;
         const bottomY = layout.bottomY + scaleLayout(356, layout);
 
-        const title = this.createShadowLabel('title', this.contentRoot, '失败了~！', 76, COLOR_WHITE, true);
+        const title = this.createShadowLabel('title', this.contentRoot, '占座失败', 76, COLOR_WHITE, true);
         title.setPosition(0, titleY, 0);
 
-        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '只会搞抽象，却搞不定我~！', 34, GOLD, true);
+        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '还有占座目标没找出来', 34, GOLD, true);
         subtitle.setPosition(-34, titleY - subtitleGap, 0);
         this.createNiumaBadge(this.contentRoot, 224, titleY - subtitleGap + 12, 112);
 
         this.heartBalloonNode = this.createHeartBalloon(this.contentRoot, 0, titleY - heartGap, 188);
-        const life = this.createShadowLabel('lifeHint', this.contentRoot, '再获得1条生命', 40, COLOR_WHITE, true);
+        const life = this.createShadowLabel('lifeHint', this.contentRoot, '补回1次找占座机会', 40, COLOR_WHITE, true);
         life.setPosition(0, titleY - 455, 0);
 
         const remainingRow = createNode('remainingRow', this.contentRoot);
         remainingRow.setPosition(0, titleY - 528, 0);
         this.createNiumaBadge(remainingRow, -120, 2, 58);
-        this.createShadowLabel('remainText', remainingRow, '剩余', 44, COLOR_WHITE, true).setPosition(-18, 0, 0);
+        this.createShadowLabel('remainText', remainingRow, '剩余占座', 40, COLOR_WHITE, true).setPosition(-8, 0, 0);
         const remainingValueNode = this.createShadowLabel('remainValue', remainingRow, '0', 58, FAIL_RED, true);
-        remainingValueNode.setPosition(88, -2, 0);
+        remainingValueNode.setPosition(128, -2, 0);
         this.remainingValueLabel = remainingValueNode.getChildByName('remainValueLabel')?.getComponent(Label)!;
 
         this.reviveBtn = this.createReviveButton(this.contentRoot, 0, bottomY + REVIVE_BUTTON_Y_OFFSET);
@@ -124,7 +126,7 @@ export default class FailPanel extends Component {
         const node = this.createPillButton('reviveBtn', parent, REVIVE_BUTTON_WIDTH, REVIVE_BUTTON_HEIGHT, FAIL_RED);
         node.setPosition(x, y, 0);
         this.drawPlayBadge(node, -78, 0);
-        createLabel('label', node, '复活', 44, COLOR_WHITE, true).node.setPosition(40, 1, 0);
+        createLabel('label', node, '复活找占座', 38, COLOR_WHITE, true).node.setPosition(42, 1, 0);
         return node;
     }
 
@@ -147,8 +149,8 @@ export default class FailPanel extends Component {
     private createHelpButton(parent: Node, x: number, y: number): Node {
         const node = this.createPillButton('helpBtn', parent, 280, 78, COLOR_WHITE);
         node.setPosition(x, y, 0);
-        this.drawShareIcon(node, -72, 0, FAIL_RED);
-        createLabel('label', node, '求助好友', 30, FAIL_RED, true).node.setPosition(26, 0, 0);
+        this.drawShareIcon(node, -72, 0, LIBRARY_TEAL);
+        createLabel('label', node, '求助同学', 30, LIBRARY_TEAL, true).node.setPosition(26, 0, 0);
         return node;
     }
 
@@ -184,39 +186,40 @@ export default class FailPanel extends Component {
         g.ellipse(12 * s, -56 * s, 38 * s, 10 * s);
         g.fill();
 
-        g.fillColor = new Color(188, 50, 22, 150);
-        this.drawHeartPath(g, 7 * s, -9 * s, s * 1.05);
+        g.fillColor = new Color(18, 77, 88, 150);
+        g.roundRect(-43 * s, -42 * s, 86 * s, 92 * s, 14 * s);
         g.fill();
 
-        g.fillColor = new Color(230, 68, 24, 255);
-        this.drawHeartPath(g, 4 * s, -5 * s, s * 1.03);
+        g.fillColor = new Color(255, 250, 226, 255);
+        g.roundRect(-48 * s, -34 * s, 96 * s, 90 * s, 14 * s);
         g.fill();
 
-        g.fillColor = new Color(255, 103, 39, 255);
-        this.drawHeartPath(g, 0, 0, s);
-        g.fill();
-
-        g.fillColor = new Color(255, 156, 84, 72);
-        this.drawHeartPath(g, -8 * s, 7 * s, s * 0.74);
-        g.fill();
-
-        g.fillColor = new Color(255, 255, 255, 196);
-        g.ellipse(-20 * s, 20 * s, 8 * s, 16 * s);
-        g.fill();
-        g.fillColor = new Color(255, 255, 255, 92);
-        g.ellipse(-29 * s, 4 * s, 8 * s, 11 * s);
-        g.fill();
-
-        g.strokeColor = new Color(255, 203, 168, 104);
-        g.lineWidth = Math.max(2, 2.1 * s);
-        this.drawHeartPath(g, -1 * s, 1 * s, s * 0.98);
+        g.strokeColor = LIBRARY_TEAL;
+        g.lineWidth = Math.max(3, 3.2 * s);
+        g.roundRect(-48 * s, -34 * s, 96 * s, 90 * s, 14 * s);
         g.stroke();
 
-        g.fillColor = new Color(213, 59, 22, 255);
-        g.roundRect(-13 * s, -56 * s, 26 * s, 14 * s, 6 * s);
+        g.fillColor = LIBRARY_TEAL;
+        g.roundRect(-48 * s, 24 * s, 96 * s, 32 * s, 13 * s);
         g.fill();
-        g.fillColor = new Color(255, 141, 73, 170);
-        g.ellipse(-4 * s, -51 * s, 6 * s, 3 * s);
+
+        g.fillColor = GOLD;
+        g.roundRect(-24 * s, -7 * s, 48 * s, 22 * s, 8 * s);
+        g.fill();
+
+        g.strokeColor = LIBRARY_NAVY;
+        g.lineWidth = Math.max(4, 4 * s);
+        g.lineCap = Graphics.LineCap.ROUND;
+        g.moveTo(-25 * s, -18 * s);
+        g.lineTo(25 * s, -18 * s);
+        g.moveTo(-17 * s, -18 * s);
+        g.lineTo(-17 * s, -34 * s);
+        g.moveTo(17 * s, -18 * s);
+        g.lineTo(17 * s, -34 * s);
+        g.stroke();
+
+        g.fillColor = new Color(255, 255, 255, 168);
+        g.roundRect(-31 * s, 36 * s, 28 * s, 8 * s, 4 * s);
         g.fill();
 
         g.strokeColor = new Color(255, 220, 197, 120);
@@ -275,10 +278,10 @@ export default class FailPanel extends Component {
         g.fillColor = new Color(0, 0, 0, 68);
         g.circle(size * 0.04, -size * 0.05, size * 0.48);
         g.fill();
-        g.fillColor = new Color(142, 190, 82, 255);
+        g.fillColor = new Color(42, 126, 139, 255);
         g.circle(0, 0, size * 0.47);
         g.fill();
-        g.strokeColor = COLOR_WHITE;
+        g.strokeColor = new Color(238, 250, 246, 255);
         g.lineWidth = Math.max(4, size * 0.07);
         g.circle(0, 0, size * 0.43);
         g.stroke();

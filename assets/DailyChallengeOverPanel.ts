@@ -25,7 +25,7 @@ const TEXT_DARK = new Color(42, 53, 78, 255);
 const TEXT_MUTED = new Color(93, 105, 128, 255);
 const CARD_LINE = new Color(226, 233, 243, 255);
 const WIN_SOFT = new Color(255, 247, 219, 255);
-const FAIL_SOFT = new Color(255, 232, 235, 255);
+const FAIL_SOFT = new Color(232, 245, 240, 255);
 
 @ccclass('DailyChallengeOverPanel')
 export default class DailyChallengeOverPanel extends Component {
@@ -66,7 +66,7 @@ export default class DailyChallengeOverPanel extends Component {
     }
 
     private buildWinUI(card: Node): void {
-        const titleArea = this.createTitleArea(card, true, '每日挑战成功', `连续挑战成功 ${GameApp.user.dailyChallengeStreak} 天`);
+        const titleArea = this.createTitleArea(card, true, '今日占座挑战成功', `连续找占座成功 ${GameApp.user.dailyChallengeStreak} 天`);
 
         const statsArea = createNode('statsArea', card);
         statsArea.setPosition(0, 46, 0);
@@ -94,12 +94,12 @@ export default class DailyChallengeOverPanel extends Component {
     private buildFailUI(card: Node): void {
         const totalCows = 5;
         const remaining = Math.max(0, totalCows - GameApp.foundCowNum);
-        const titleArea = this.createTitleArea(card, false, '每日挑战失败', `还差 ${remaining} 只牛马`);
+        const titleArea = this.createTitleArea(card, false, '占座挑战失败', `还差 ${remaining} 处占座目标`);
 
         const statsArea = createNode('statsArea', card);
         statsArea.setPosition(0, 52, 0);
-        this.foundValueLabel = this.createStatCard(statsArea, 'found', '找到牛马', '0', -138, 56, COLOR_RED, TEXT_DARK);
-        this.createStatCard(statsArea, 'remaining', '剩余目标', `${remaining} 只`, 138, 56, COLOR_GOLD, TEXT_DARK);
+        this.foundValueLabel = this.createStatCard(statsArea, 'found', '已找占座', '0', -138, 56, COLOR_TEAL, TEXT_DARK);
+        this.createStatCard(statsArea, 'remaining', '剩余占座', `${remaining} 处`, 138, 56, COLOR_GOLD, TEXT_DARK);
         this.createStatCard(statsArea, 'time', '用时', this.formatTime(GameApp.useTime), -138, -48, COLOR_TEAL, TEXT_DARK);
         this.createStatCard(statsArea, 'revive', '复活机会', `${GameApp.dailyChallengeReviveTime} 次`, 138, -48, COLOR_AD_BLUE, TEXT_DARK);
 
@@ -109,17 +109,17 @@ export default class DailyChallengeOverPanel extends Component {
         const btnGap = -70;
 
         if (GameApp.dailyChallengeReviveTime > 0) {
-            const revBtn = this.createRewardButton('reviveBtn', btnArea, '复活继续 +60s+心', '免费复活 +60s+心', 440, 58);
+            const revBtn = this.createRewardButton('reviveBtn', btnArea, '复活找占座 +60s', '免费复活找占座 +60s', 440, 58);
             revBtn.node.setPosition(0, btnY, 0);
             this.reviveBtn = revBtn.node;
             btnY += btnGap;
         }
 
-        const restartBtn = this.createRewardButton('restartBtn', btnArea, '重新挑战', '重新挑战', 440, 60);
+        const restartBtn = this.createRewardButton('restartBtn', btnArea, '重新找占座', '重新找占座', 440, 60);
         restartBtn.node.setPosition(0, btnY, 0);
         btnY += btnGap;
 
-        const friendBtn = createRoundedButton('friendBtn', btnArea, '求助好友', 440, 56, COLOR_AD_BLUE, COLOR_WHITE, 20, 20);
+        const friendBtn = createRoundedButton('friendBtn', btnArea, '求助同学', 440, 56, COLOR_AD_BLUE, COLOR_WHITE, 20, 20);
         friendBtn.node.setPosition(0, btnY, 0);
         btnY += btnGap;
 
@@ -157,10 +157,10 @@ export default class DailyChallengeOverPanel extends Component {
         badge.getComponent(UITransform)!.setContentSize(new Size(142, 142));
 
         const g = badge.addComponent(Graphics);
-        g.fillColor = isWin ? new Color(255, 227, 132, 95) : new Color(255, 118, 126, 90);
+        g.fillColor = isWin ? new Color(255, 227, 132, 95) : new Color(74, 150, 156, 86);
         g.circle(0, 0, 70);
         g.fill();
-        g.fillColor = isWin ? new Color(255, 206, 63, 255) : new Color(239, 91, 99, 255);
+        g.fillColor = isWin ? new Color(255, 206, 63, 255) : new Color(42, 126, 139, 255);
         g.circle(0, 0, 52);
         g.fill();
 
@@ -172,10 +172,14 @@ export default class DailyChallengeOverPanel extends Component {
             g.lineTo(-6, -16);
             g.lineTo(26, 20);
         } else {
-            g.moveTo(-21, -21);
-            g.lineTo(21, 21);
-            g.moveTo(21, -21);
-            g.lineTo(-21, 21);
+            g.lineWidth = 7;
+            g.roundRect(-24, -12, 48, 26, 8);
+            g.moveTo(-18, -14);
+            g.lineTo(-18, -28);
+            g.moveTo(18, -14);
+            g.lineTo(18, -28);
+            g.moveTo(-28, 20);
+            g.lineTo(28, 20);
         }
         g.stroke();
         return badge;

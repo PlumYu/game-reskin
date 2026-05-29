@@ -4,7 +4,6 @@ import { UIID } from './Core/Enum';
 import type { RankItem, RankResult } from './Core/PlatformBase';
 import {
     addButtonFeedback,
-    COLOR_AD_BLUE,
     COLOR_DESC_GRAY,
     COLOR_DIVIDER,
     COLOR_GOLD,
@@ -25,10 +24,12 @@ export const RANK_SURVIVAL = 4;
 
 type RankType = typeof RANK_LEVEL | typeof RANK_SURVIVAL;
 
-const PANEL_BG = new Color(248, 251, 255, 255);
+const PANEL_BG = new Color(247, 251, 247, 255);
 const ROW_BG = new Color(255, 255, 255, 230);
-const SELF_ROW_BG = new Color(255, 246, 220, 255);
-const MUTED_BLUE = new Color(118, 138, 182, 255);
+const SELF_ROW_BG = new Color(220, 246, 238, 255);
+const MUTED_BLUE = new Color(88, 140, 130, 255);
+const TEAL_PRIMARY = new Color(44, 127, 139, 255);
+const TEAL_LIGHT = new Color(222, 246, 240, 255);
 
 function submitRankScores(onComplete?: () => void): void {
     const scores = [
@@ -124,16 +125,43 @@ export default class RankPanel extends Component {
         this.cardWidth = Math.min(650, Math.max(560, screenSize.width * 0.86));
         const cardHeight = Math.min(860, Math.max(740, screenSize.height * 0.68));
         this.rowWidth = this.cardWidth - 80;
-        const card = createRoundedCard('card', overlay, this.cardWidth, cardHeight, PANEL_BG, 28, 4, 35);
+        const card = createRoundedCard('card', overlay, this.cardWidth, cardHeight, PANEL_BG, 30, 4, 35);
         card.setPosition(0, 0, 0);
 
-        this.titleLabel = createLabel('title', card, '排行榜', 38, COLOR_TITLE_NAVY, true);
-        this.titleLabel.node.setPosition(0, cardHeight / 2 - 58, 0);
+        const cardG = card.getComponent(Graphics)!;
+        cardG.fillColor = TEAL_PRIMARY;
+        cardG.roundRect(-this.cardWidth / 2 + 24, cardHeight / 2 - 94, this.cardWidth - 48, 66, 20);
+        cardG.fill();
+        cardG.fillColor = new Color(255, 255, 255, 72);
+        cardG.roundRect(-this.cardWidth / 2 + 42, cardHeight / 2 - 48, this.cardWidth - 84, 8, 4);
+        cardG.fill();
+
+        this.titleLabel = createLabel('title', card, '排行榜', 32, COLOR_WHITE, true);
+        this.titleLabel.node.setPosition(0, cardHeight / 2 - 62, 0);
         this.titleLabel.node.getComponent(UITransform)!.setContentSize(new Size(this.cardWidth - 120, 54));
 
-        const closeButton = createRoundedButton('close', card, 'X', 58, 58, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 30, 29);
-        closeButton.node.setPosition(this.cardWidth / 2 - 58, cardHeight / 2 - 58, 0);
-        closeButton.node.on(Node.EventType.TOUCH_END, () => {
+        const closeNode = createNode('close', card);
+        closeNode.setPosition(0, -cardHeight / 2 - 54, 0);
+        closeNode.getComponent(UITransform)!.setContentSize(new Size(64, 64));
+        const closeG = closeNode.addComponent(Graphics);
+        closeG.fillColor = TEAL_PRIMARY;
+        closeG.circle(0, 0, 32);
+        closeG.fill();
+        closeG.strokeColor = TEAL_LIGHT;
+        closeG.lineWidth = 3;
+        closeG.circle(0, 0, 29);
+        closeG.stroke();
+        closeG.strokeColor = COLOR_WHITE;
+        closeG.lineWidth = 9;
+        closeG.lineCap = Graphics.LineCap.ROUND;
+        closeG.moveTo(-15, 15);
+        closeG.lineTo(15, -15);
+        closeG.stroke();
+        closeG.moveTo(15, 15);
+        closeG.lineTo(-15, -15);
+        closeG.stroke();
+        addButtonFeedback(closeNode);
+        closeNode.on(Node.EventType.TOUCH_END, () => {
             GameApp.uiManager?.close(UIID.RankPanel);
         });
 
@@ -158,7 +186,7 @@ export default class RankPanel extends Component {
         this.rowsRoot = createNode('rows', card);
         this.rowsRoot.setPosition(0, 0, 0);
 
-        const prevButton = createRoundedButton('prevPage', card, '上一页', 128, 48, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 22, 20);
+        const prevButton = createRoundedButton('prevPage', card, '上一页', 128, 48, new Color(232, 246, 242, 255), COLOR_TITLE_NAVY, 22, 20);
         prevButton.node.setPosition(-150, -cardHeight / 2 + 118, 0);
         prevButton.node.on(Node.EventType.TOUCH_END, () => this.changePage(-1));
         this.prevPageLabel = prevButton.label;
@@ -167,7 +195,7 @@ export default class RankPanel extends Component {
         this.pageLabel.node.setPosition(0, -cardHeight / 2 + 118, 0);
         this.pageLabel.node.getComponent(UITransform)!.setContentSize(new Size(130, 42));
 
-        const nextButton = createRoundedButton('nextPage', card, '下一页', 128, 48, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 22, 20);
+        const nextButton = createRoundedButton('nextPage', card, '下一页', 128, 48, new Color(232, 246, 242, 255), COLOR_TITLE_NAVY, 22, 20);
         nextButton.node.setPosition(150, -cardHeight / 2 + 118, 0);
         nextButton.node.on(Node.EventType.TOUCH_END, () => this.changePage(1));
         this.nextPageLabel = nextButton.label;
@@ -207,7 +235,7 @@ export default class RankPanel extends Component {
 
     private paintTab(graphics: Graphics, active: boolean): void {
         graphics.clear();
-        graphics.fillColor = active ? COLOR_AD_BLUE : new Color(232, 238, 248, 255);
+        graphics.fillColor = active ? TEAL_PRIMARY : new Color(232, 246, 242, 255);
         graphics.roundRect(-95, -29, 190, 58, 24);
         graphics.fill();
     }
@@ -311,7 +339,7 @@ export default class RankPanel extends Component {
         name.node.getComponent(UITransform)!.setContentSize(new Size(this.rowWidth - 230, 40));
         name.horizontalAlign = Label.HorizontalAlign.LEFT;
 
-        const score = createLabel('score', row, formatScore(this.currentType, item.score), 22, COLOR_AD_BLUE, true);
+        const score = createLabel('score', row, formatScore(this.currentType, item.score), 22, TEAL_PRIMARY, true);
         score.node.setPosition(this.rowWidth / 2 - 78, 0, 0);
         score.node.getComponent(UITransform)!.setContentSize(new Size(130, 40));
     }

@@ -44,9 +44,9 @@ export function installDrawGridHintOverlay(target: any): void {
 
         const sprite = iconNode.getComponent(Sprite) || iconNode.addComponent(Sprite);
         iconNode.active = true;
-        AssetService.loadSpriteFrame('images/提示-排除', frame => {
+        AssetService.loadSpriteFrame('guide/guide_finger', frame => {
             if (!frame || !iconNode.isValid) {
-                console.warn('[DrawGrid] Hint panel icon sprite load failed: images/提示-排除');
+                console.warn('[DrawGrid] Hint panel icon sprite load failed: guide/guide_finger');
                 return;
             }
             sprite.spriteFrame = frame;

@@ -405,7 +405,7 @@ export function installDrawGridHud(target: any): void {
         }
 
         const valueLabel = this.survivalFoundCowsLabel as Label | null;
-        this.setCounterPanelCaption(root, '找到牛马:', valueLabel);
+        this.setCounterPanelCaption(root, '找到占座:', valueLabel);
         root.active = GameApp.gameMode === GameMode.survival;
         this.updateSurvivalFoundCowsLabel?.();
         return root;
@@ -618,7 +618,7 @@ export function installDrawGridHud(target: any): void {
         const labels: Label[] = [];
         this.collectLabels(root, labels);
 
-        const leftLabel = labels.find(label => label.string.indexOf('每个部门') >= 0 || label.string.indexOf('每种颜色') >= 0 || label.string.indexOf('每种气球') >= 0);
+        const leftLabel = labels.find(label => label.string.indexOf('每种座位') >= 0 || label.string.indexOf('每种颜色') >= 0);
         const middleLabel = labels.find(label => label.string.indexOf('每行') >= 0 && label.string.indexOf('每列') >= 0);
         const rightLabel = labels.find(label => label.string.indexOf('不能相邻') >= 0 || label.string.indexOf('不能挨着') >= 0);
         if (!leftLabel || !middleLabel || !rightLabel) {
@@ -1492,8 +1492,8 @@ export function installDrawGridHud(target: any): void {
     applySceneHintButtonSprites: function (splash: Node): void {
         const tips1 = splash.getChildByName('tips1');
         const tips2 = splash.getChildByName('tips2');
-        this.applySceneButtonSprite(tips1, 'images/提示-找牛');
-        this.applySceneButtonSprite(tips2, 'images/提示-排除');
+        this.applySceneButtonSprite(tips1, 'images/hud_coin');
+        this.applySceneButtonSprite(tips2, 'guide/guide_finger');
         this.syncSceneHintButtonSize(tips1);
         this.syncSceneHintButtonSize(tips2);
     },
@@ -1679,11 +1679,11 @@ export function installDrawGridHud(target: any): void {
         }
     },
     getHintKindTitle: function (kind: HintKind): string {
-        return kind === 'cow' ? '牛马显示器' : '提示';
+        return kind === 'cow' ? '占座定位器' : '提示';
     },
     getHintKindDescription: function (kind: HintKind): string {
         return kind === 'cow'
-            ? '使用牛马显示器，可以直接显示\n一头牛马。'
+            ? '使用占座定位器，可以直接显示\n一个占座目标。'
             : '卡住了？立刻显示\n您的下一步。';
     },
     applyHintPurchaseIcon: function (card: Node, kind: HintKind): void {
@@ -1693,7 +1693,7 @@ export function installDrawGridHud(target: any): void {
         iconSprite.sizeMode = Sprite.SizeMode.CUSTOM;
         iconSprite.trim = false;
         iconSprite.color = COLOR_WHITE;
-        const path = kind === 'cow' ? 'images/提示-找牛' : 'images/提示-排除';
+        const path = kind === 'cow' ? 'images/hud_coin' : 'guide/guide_finger';
         AssetService.loadSpriteFrame(path, frame => {
             if (!frame) {
                 console.error(`[DrawGrid] required hint purchase icon missing: ${path}`);

@@ -17,12 +17,12 @@ interface SkinDef {
 }
 
 const SKINS: SkinDef[] = [
-    { id: 1, name: '经典牛', cost: 0, color: new Color(232, 184, 75, 255) },
-    { id: 2, name: '火焰牛', cost: 300, color: new Color(220, 80, 50, 255) },
-    { id: 3, name: '冰霜牛', cost: 300, color: new Color(80, 180, 240, 255) },
-    { id: 4, name: '暗影牛', cost: 500, color: new Color(120, 60, 200, 255) },
-    { id: 5, name: '黄金牛', cost: 800, color: new Color(255, 215, 0, 255) },
-    { id: 6, name: '彩虹牛', cost: 1200, color: new Color(255, 100, 180, 255) },
+    { id: 1, name: '默认座', cost: 0, color: new Color(232, 184, 75, 255) },
+    { id: 2, name: '暖灯座', cost: 300, color: new Color(220, 80, 50, 255) },
+    { id: 3, name: '靠窗座', cost: 300, color: new Color(80, 180, 240, 255) },
+    { id: 4, name: '夜读座', cost: 500, color: new Color(120, 60, 200, 255) },
+    { id: 5, name: '黄金座', cost: 800, color: new Color(255, 215, 0, 255) },
+    { id: 6, name: '彩虹座', cost: 1200, color: new Color(255, 100, 180, 255) },
 ];
 
 @ccclass('SkinPanel')

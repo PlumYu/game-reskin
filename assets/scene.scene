@@ -2247,7 +2247,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "每个部门只\n藏1个牛马",
+    "_string": "每种座位\n仅有1处占座",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -2379,7 +2379,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "牛马之间\n不能挨着",
+    "_string": "占座目标\n不能相邻",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -2703,7 +2703,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "剩余牛马:",
+    "_string": "剩余占座:",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -3282,7 +3282,7 @@
       "b": 134,
       "a": 255
     },
-    "_string": "橙色区域只有一个空位,因此该空位可以确定放置牛马。",
+    "_string": "橙色区域只有一个空位,因此该空位可以确定为占座目标。",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
     "_actualFontSize": 26,
