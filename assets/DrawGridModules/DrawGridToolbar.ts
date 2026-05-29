@@ -1,4 +1,4 @@
-﻿import { Graphics, Color, Vec3, v3, input, Input, EventTouch, tween, SpriteFrame, Node, Sprite, UITransform as CcUITransform, Label, EditBox, director, Layers, Texture2D, UIOpacity, view, Button, Widget } from 'cc';
+﻿import { Graphics, Color, Vec3, v3, input, Input, EventTouch, tween, SpriteFrame, Node, Sprite, UITransform as CcUITransform, Label, LabelOutline, EditBox, director, Layers, Texture2D, UIOpacity, view, Button, Widget } from 'cc';
 import GameApp from '../Core/GameApp';
 import { GameMode, UIID } from '../Core/Enum';
 import UIManager from '../Core/UIManager';
@@ -246,7 +246,7 @@ export function installDrawGridToolbar(target: any): void {
 
         const tools: { name: string; cost: number; size: number; iconSize: number; handler: () => void; drawIcon: (g: Graphics) => void }[] = [
             { name: '清除', cost: 0, size: largeCardSize, iconSize: largeIconSize, handler: this.onToolClear.bind(this), drawIcon: this.drawToolEraserIcon },
-            { name: '找牛', cost: COW_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolReveal.bind(this), drawIcon: this.drawToolCowIcon },
+            { name: '找杯', cost: COW_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolReveal.bind(this), drawIcon: this.drawToolCowIcon },
             { name: '提示', cost: EXCLUDE_HINT_COIN_COST, size: cardSize, iconSize, handler: this.onToolHint.bind(this), drawIcon: this.drawToolBulbIcon },
             { name: '坐标', cost: 0, size: largeCardSize, iconSize: largeIconSize, handler: this.onToolCoordinate.bind(this), drawIcon: this.drawToolGridIcon },
         ];
@@ -272,8 +272,21 @@ export function installDrawGridToolbar(target: any): void {
             const g = iconNode.addComponent(Graphics);
             tool.drawIcon(g);
 
-            const lbl = createLabel(`label_${tool.name}`, card, tool.name, tool.size > cardSize ? 18 : 12, new Color(80, 80, 100, 255));
-            lbl.node.setPosition(0, tool.cost > 0 ? -14 : (tool.size > cardSize ? -34 : -20), 0);
+            const isLargeTool = tool.size > cardSize;
+            const lbl = createLabel(
+                `label_${tool.name}`,
+                card,
+                tool.name,
+                isLargeTool ? 16 : 12,
+                isLargeTool ? new Color(115, 74, 42, 255) : new Color(80, 80, 100, 255),
+                isLargeTool,
+            );
+            lbl.node.setPosition(0, tool.cost > 0 ? -14 : (isLargeTool ? -22 : -20), 0);
+            if (isLargeTool) {
+                const outline = lbl.addComponent(LabelOutline);
+                outline.color = new Color(255, 245, 230, 255);
+                outline.width = 3;
+            }
 
             if (tool.cost > 0) {
                 const costLbl = createLabel(`cost_${tool.name}`, card, `${tool.cost}`, 11, COLOR_GOLD, true);
@@ -428,7 +441,7 @@ export function installDrawGridToolbar(target: any): void {
 
         if (hiddenCowIndices.length <= 0) {
             console.log("所有目标都已经找齐或翻开了！");
-            this.showWorkplaceToast('所有牛马都已经找齐了', v3(0, 330, 0), new Color(180, 190, 205, 255));
+            this.showWorkplaceToast('所有奶茶都已经找齐了', v3(0, 330, 0), new Color(180, 190, 205, 255));
             return;
         }
 
@@ -436,7 +449,7 @@ export function installDrawGridToolbar(target: any): void {
         if (!this.consumeHintCount('cow')) return;
 
         this.hintUsedThisLevel = true;
-        this.showWorkplaceToast('牛马雷达，直接锁一格', v3(0, 330, 0), new Color(255, 238, 92, 255));
+        this.showWorkplaceToast('奶茶雷达，直接锁一格', v3(0, 330, 0), new Color(255, 238, 92, 255));
 
         const randomIndex = hiddenCowIndices[Math.floor(Math.random() * hiddenCowIndices.length)];
         this.revealSquare(randomIndex);

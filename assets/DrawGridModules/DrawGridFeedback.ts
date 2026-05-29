@@ -1134,7 +1134,7 @@ export function installDrawGridFeedback(target: any): void {
         if (!this.remainingCowsLabel) return;
         const container = this.remainingCowsLabel.node.parent;
         if (!container || !container.isValid) return;
-        const caption = '剩余牛马:';
+        const caption = '剩余奶茶:';
         const labels: Label[] = [];
         const collect = (node: Node) => {
             const label = node.getComponent(Label);

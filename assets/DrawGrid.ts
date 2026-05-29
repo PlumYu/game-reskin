@@ -135,9 +135,9 @@ export class DrawGrid extends Component {
         { key: 'steadyFinish', text: '最后一步别急' }
     ];
     private readonly ruleCardTexts = {
-        left: '每种气球\n仅有1只牛马',
-        middle: '每行每列\n仅有1只牛马',
-        right: '牛马之间\n不能相邻'
+        left: '每种口味\n仅有1杯奶茶',
+        middle: '每行每列\n仅有1杯奶茶',
+        right: '奶茶之间\n不能相邻'
     };
 
     private countdownLabel: Label | null = null;
@@ -579,12 +579,12 @@ export class DrawGrid extends Component {
         return frame;
     }
     private readonly GUIDE_TIPS: string[] = [
-        '连点两下，把牛马找出来',
-        '每种颜色的气球只能有一只牛马',
-        '牛马之间不能相邻，单击排除周围气球',
-        '每行每列只能有一只牛马，继续排除这些气球',
-        '只剩最后的黄色气球了，连点两下找出牛马吧',
-        '最后两头牛马藏在哪儿，你找到了吗？'
+        '连点两下，把奶茶找出来',
+        '每种口味的杯子只藏一杯奶茶',
+        '奶茶之间不能相邻，单击排除周围格子',
+        '每行每列只能有一杯奶茶，继续排除这些格子',
+        '只剩最后一种口味了，连点两下找出奶茶吧',
+        '最后两杯奶茶藏在哪儿，你找到了吗？'
     ];
 }
 

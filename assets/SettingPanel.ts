@@ -5,11 +5,21 @@ import SfxManager from './Core/SfxManager';
 import CountdownController from './Core/CountdownController';
 import {
     createNode, createLabel, createFullScreenOverlay, getScreenSize, addButtonFeedback,
-    COLOR_DARK_BLUE, COLOR_WHITE, COLOR_RED, COLOR_TITLE_NAVY,
-    COLOR_TOGGLE_BLUE, COLOR_TOGGLE_GRAY, COLOR_SETTING_BG,
+    COLOR_WHITE,
 } from './Utils/UIBuilder';
 
 const { ccclass } = _decorator;
+
+const SETTING_PANEL_BG = new Color(255, 247, 233, 255);
+const SETTING_PANEL_LINE = new Color(227, 182, 118, 225);
+const SETTING_PANEL_SHADOW = new Color(118, 77, 31, 44);
+const SETTING_ROW_BG = new Color(255, 252, 245, 240);
+const SETTING_ROW_LINE = new Color(233, 201, 159, 188);
+const SETTING_TEXT = new Color(118, 76, 42, 255);
+const SETTING_MUTED = new Color(160, 118, 74, 255);
+const SETTING_TOGGLE_ON = new Color(241, 152, 67, 255);
+const SETTING_TOGGLE_OFF = new Color(216, 198, 173, 255);
+const SETTING_ICON_BG = new Color(255, 238, 208, 255);
 
 @ccclass('SettingPanel')
 export default class SettingPanel extends Component {
@@ -46,7 +56,7 @@ export default class SettingPanel extends Component {
         const ut = this.node.getComponent(UITransform)!;
         ut.setContentSize(screenSize);
 
-        createFullScreenOverlay('bgOverlay', this.node, new Color(0, 0, 0, 255), 160);
+        createFullScreenOverlay('bgOverlay', this.node, new Color(0, 0, 0, 255), 132);
 
         const card = createNode('card', this.node);
         card.setPosition(0, this.settingCardY, 0);
@@ -57,15 +67,19 @@ export default class SettingPanel extends Component {
         cardUt.setContentSize(new Size(cardW, cardH));
 
         const cardG = card.addComponent(Graphics);
-        cardG.fillColor = new Color(25, 38, 72, 42);
+        cardG.fillColor = SETTING_PANEL_SHADOW;
         cardG.roundRect(-cardW / 2 + 8, -cardH / 2 - 10, cardW - 16, cardH, 32);
         cardG.fill();
-        cardG.fillColor = COLOR_SETTING_BG;
+        cardG.fillColor = SETTING_PANEL_BG;
         cardG.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, 30);
         cardG.fill();
+        cardG.strokeColor = SETTING_PANEL_LINE;
+        cardG.lineWidth = 3;
+        cardG.roundRect(-cardW / 2 + 1, -cardH / 2 + 1, cardW - 2, cardH - 2, 29);
+        cardG.stroke();
 
         // 标题
-        const title = createLabel('title', card, '设置', 32, COLOR_TITLE_NAVY, true);
+        const title = createLabel('title', card, '奶茶设置', 32, SETTING_TEXT, true);
         title.node.setPosition(0, cardH / 2 - 54, 0);
 
         // 背景音乐 toggle
@@ -91,10 +105,10 @@ export default class SettingPanel extends Component {
             const backH = 56;
             backUt.setContentSize(new Size(backW, backH));
             const backG = backNode.addComponent(Graphics);
-            backG.fillColor = new Color(228, 78, 83, 245);
+            backG.fillColor = new Color(236, 129, 72, 245);
             backG.roundRect(-backW / 2, -backH / 2, backW, backH, 18);
             backG.fill();
-            createLabel('backLabel', backNode, '退出游戏', 22, COLOR_WHITE, true);
+            createLabel('backLabel', backNode, '退出本局', 22, COLOR_WHITE, true);
             this.backBtn = backNode;
         }
 
@@ -105,10 +119,10 @@ export default class SettingPanel extends Component {
         const closeUt = closeNode.getComponent(UITransform)!;
         closeUt.setContentSize(new Size(64, 64));
         const closeG = closeNode.addComponent(Graphics);
-        closeG.fillColor = new Color(255, 118, 105, 255);
+        closeG.fillColor = new Color(244, 153, 73, 255);
         closeG.circle(0, 0, 32);
         closeG.fill();
-        closeG.strokeColor = new Color(255, 224, 219, 255);
+        closeG.strokeColor = new Color(255, 242, 221, 255);
         closeG.lineWidth = 3;
         closeG.circle(0, 0, 29);
         closeG.stroke();
@@ -131,17 +145,17 @@ export default class SettingPanel extends Component {
         row.getComponent(UITransform)!.setContentSize(new Size(308, 78));
 
         const rowG = row.addComponent(Graphics);
-        rowG.fillColor = new Color(255, 255, 255, 225);
+        rowG.fillColor = SETTING_ROW_BG;
         rowG.roundRect(-154, -39, 308, 78, 24);
         rowG.fill();
-        rowG.strokeColor = new Color(198, 211, 238, 160);
+        rowG.strokeColor = SETTING_ROW_LINE;
         rowG.lineWidth = 1;
         rowG.roundRect(-154, -39, 308, 78, 24);
         rowG.stroke();
 
         this.createSettingIcon(row, type);
         const labelText = type === 'music' ? '背景音乐' : (type === 'sound' ? '按键音效' : '震动反馈');
-        const nameLabel = createLabel('name', row, labelText, 22, COLOR_TITLE_NAVY, true);
+        const nameLabel = createLabel('name', row, labelText, 22, SETTING_TEXT, true);
         nameLabel.node.setPosition(-34, 0, 0);
 
         // toggle 轨道
@@ -153,7 +167,7 @@ export default class SettingPanel extends Component {
         trackUt.setContentSize(new Size(trackW, trackH));
 
         const trackG = track.addComponent(Graphics);
-        const trackColor = initialState ? COLOR_TOGGLE_BLUE : COLOR_TOGGLE_GRAY;
+        const trackColor = initialState ? SETTING_TOGGLE_ON : SETTING_TOGGLE_OFF;
         trackG.fillColor = trackColor;
         trackG.roundRect(-trackW / 2, -trackH / 2, trackW, trackH, trackH / 2);
         trackG.fill();
@@ -168,7 +182,7 @@ export default class SettingPanel extends Component {
         dotG.fill();
 
         // 状态文字
-        const status = createLabel('status', row, initialState ? '开' : '关', 18, initialState ? COLOR_TOGGLE_BLUE : COLOR_TOGGLE_GRAY);
+        const status = createLabel('status', row, initialState ? '开' : '关', 18, initialState ? SETTING_TOGGLE_ON : SETTING_TOGGLE_OFF);
         status.node.setPosition(108, 0, 0);
 
         return row;
@@ -180,11 +194,11 @@ export default class SettingPanel extends Component {
         icon.getComponent(UITransform)!.setContentSize(new Size(48, 48));
 
         const g = icon.addComponent(Graphics);
-        g.fillColor = new Color(225, 235, 255, 255);
+        g.fillColor = SETTING_ICON_BG;
         g.circle(0, 0, 24);
         g.fill();
 
-        g.strokeColor = COLOR_TOGGLE_BLUE;
+        g.strokeColor = SETTING_TOGGLE_ON;
         g.lineWidth = 4;
         g.lineCap = Graphics.LineCap.ROUND;
 
@@ -196,7 +210,7 @@ export default class SettingPanel extends Component {
             g.moveTo(10, 12);
             g.lineTo(10, -4);
             g.stroke();
-            g.fillColor = COLOR_TOGGLE_BLUE;
+            g.fillColor = SETTING_TOGGLE_ON;
             g.circle(-9, -10, 6);
             g.fill();
             g.circle(5, -6, 6);
@@ -205,7 +219,7 @@ export default class SettingPanel extends Component {
         }
 
         if (type === 'vibrate') {
-            g.strokeColor = COLOR_TOGGLE_BLUE;
+            g.strokeColor = SETTING_TOGGLE_ON;
             g.lineWidth = 3;
             g.roundRect(-8, -15, 16, 30, 5);
             g.stroke();
@@ -215,11 +229,11 @@ export default class SettingPanel extends Component {
             g.lineTo(3, 10);
             g.stroke();
 
-            g.fillColor = new Color(COLOR_TOGGLE_BLUE.r, COLOR_TOGGLE_BLUE.g, COLOR_TOGGLE_BLUE.b, 80);
+            g.fillColor = new Color(SETTING_TOGGLE_ON.r, SETTING_TOGGLE_ON.g, SETTING_TOGGLE_ON.b, 80);
             g.roundRect(-5, -8, 10, 15, 3);
             g.fill();
 
-            g.strokeColor = COLOR_TOGGLE_BLUE;
+            g.strokeColor = SETTING_TOGGLE_ON;
             g.lineWidth = 3;
             g.moveTo(-17, -15);
             g.bezierCurveTo(-26, -10, -8, -5, -17, 0);
@@ -231,7 +245,7 @@ export default class SettingPanel extends Component {
             return;
         }
 
-        g.fillColor = COLOR_TOGGLE_BLUE;
+        g.fillColor = SETTING_TOGGLE_ON;
         g.moveTo(-13, -8);
         g.lineTo(-4, -8);
         g.lineTo(8, -18);
@@ -240,7 +254,7 @@ export default class SettingPanel extends Component {
         g.lineTo(-13, 8);
         g.close();
         g.fill();
-        g.strokeColor = COLOR_TOGGLE_BLUE;
+        g.strokeColor = SETTING_TOGGLE_ON;
         g.lineWidth = 2.5;
         g.moveTo(13, -11);
         g.bezierCurveTo(17, -7, 17, 7, 13, 11);
@@ -315,7 +329,7 @@ export default class SettingPanel extends Component {
         const trackW = 72;
         const trackH = 34;
         trackG.clear();
-        trackG.fillColor = enabled ? COLOR_TOGGLE_BLUE : COLOR_TOGGLE_GRAY;
+        trackG.fillColor = enabled ? SETTING_TOGGLE_ON : SETTING_TOGGLE_OFF;
         trackG.roundRect(-trackW / 2, -trackH / 2, trackW, trackH, trackH / 2);
         trackG.fill();
 
@@ -323,7 +337,7 @@ export default class SettingPanel extends Component {
         tween(dot).to(0.15, { position: v3(targetX, 0, 0) }).start();
 
         statusLabel.string = enabled ? '开' : '关';
-        statusLabel.color = enabled ? COLOR_TOGGLE_BLUE : COLOR_TOGGLE_GRAY;
+        statusLabel.color = enabled ? SETTING_TOGGLE_ON : SETTING_TOGGLE_OFF;
     }
 
     private onBackToMain(): void {
@@ -354,7 +368,7 @@ export default class SettingPanel extends Component {
         root.setSiblingIndex(999);
         this.survivalExitConfirmRoot = root;
 
-        createFullScreenOverlay('SurvivalExitConfirmOverlay', root, new Color(0, 0, 0, 255), 128);
+        createFullScreenOverlay('SurvivalExitConfirmOverlay', root, new Color(0, 0, 0, 255), 112);
 
         const card = createNode('SurvivalExitConfirmCard', root);
         card.setPosition(0, 25, 0);
@@ -362,14 +376,14 @@ export default class SettingPanel extends Component {
         const cardH = 560;
         card.getComponent(UITransform)!.setContentSize(new Size(cardW, cardH));
         const cardG = card.addComponent(Graphics);
-        cardG.fillColor = new Color(32, 42, 60, 42);
+        cardG.fillColor = new Color(130, 85, 42, 34);
         cardG.roundRect(-cardW / 2 + 8, -cardH / 2 - 10, cardW - 16, cardH, 44);
         cardG.fill();
-        cardG.fillColor = new Color(255, 255, 255, 255);
+        cardG.fillColor = SETTING_PANEL_BG;
         cardG.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, 44);
         cardG.fill();
 
-        const title = createLabel('SurvivalExitTitle', card, '提示!', 42, new Color(92, 96, 105, 255), true);
+        const title = createLabel('SurvivalExitTitle', card, '离开本局？', 42, SETTING_TEXT, true);
         title.node.setPosition(0, cardH / 2 - 76, 0);
 
         const messageBox = createNode('SurvivalExitMessageBox', card);
@@ -378,15 +392,15 @@ export default class SettingPanel extends Component {
         messageBox.setPosition(0, 62, 0);
         messageBox.getComponent(UITransform)!.setContentSize(new Size(messageW, messageH));
         const messageG = messageBox.addComponent(Graphics);
-        messageG.fillColor = new Color(239, 240, 242, 255);
+        messageG.fillColor = new Color(255, 240, 218, 255);
         messageG.roundRect(-messageW / 2, -messageH / 2, messageW, messageH, 28);
         messageG.fill();
 
-        const question = createLabel('SurvivalExitQuestion', messageBox, '确定要退出吗?', 28, new Color(108, 112, 122, 255), true);
+        const question = createLabel('SurvivalExitQuestion', messageBox, '确定先离开这局找奶茶吗？', 28, SETTING_TEXT, true);
         question.node.getComponent(UITransform)!.setContentSize(new Size(messageW - 50, 44));
         question.node.setPosition(0, 26, 0);
 
-        const warning = createLabel('SurvivalExitWarning', messageBox, '主动退出将直接结算本次挑战!', 25, new Color(235, 58, 58, 255), true);
+        const warning = createLabel('SurvivalExitWarning', messageBox, '主动退出会直接结算本次奶茶挑战！', 25, new Color(214, 100, 73, 255), true);
         warning.node.getComponent(UITransform)!.setContentSize(new Size(messageW - 44, 46));
         warning.node.setPosition(0, -22, 0);
         warning.overflow = Label.Overflow.SHRINK;
@@ -397,10 +411,10 @@ export default class SettingPanel extends Component {
         const settleH = 76;
         settleBtn.getComponent(UITransform)!.setContentSize(new Size(settleW, settleH));
         const settleG = settleBtn.addComponent(Graphics);
-        settleG.fillColor = new Color(154, 54, 52, 72);
+        settleG.fillColor = new Color(173, 109, 51, 62);
         settleG.roundRect(-settleW / 2 + 3, -settleH / 2 - 6, settleW - 6, settleH, 30);
         settleG.fill();
-        settleG.fillColor = new Color(232, 74, 67, 255);
+        settleG.fillColor = new Color(237, 141, 64, 255);
         settleG.roundRect(-settleW / 2, -settleH / 2, settleW, settleH, 30);
         settleG.fill();
         createLabel('SurvivalExitSettleLabel', settleBtn, '结算', 32, COLOR_WHITE, true);
@@ -411,7 +425,7 @@ export default class SettingPanel extends Component {
         closeNode.setPosition(0, -330, 0);
         closeNode.getComponent(UITransform)!.setContentSize(new Size(72, 72));
         const closeG = closeNode.addComponent(Graphics);
-        closeG.fillColor = new Color(26, 34, 48, 178);
+        closeG.fillColor = new Color(123, 85, 50, 188);
         closeG.circle(0, 0, 34);
         closeG.fill();
         closeG.strokeColor = new Color(255, 255, 255, 245);

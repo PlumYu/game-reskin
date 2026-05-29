@@ -25,10 +25,16 @@ export const RANK_SURVIVAL = 4;
 
 type RankType = typeof RANK_LEVEL | typeof RANK_SURVIVAL;
 
-const PANEL_BG = new Color(248, 251, 255, 255);
-const ROW_BG = new Color(255, 255, 255, 230);
-const SELF_ROW_BG = new Color(255, 246, 220, 255);
-const MUTED_BLUE = new Color(118, 138, 182, 255);
+const PANEL_BG = new Color(255, 248, 236, 255);
+const ROW_BG = new Color(255, 253, 247, 240);
+const SELF_ROW_BG = new Color(255, 235, 198, 255);
+const MUTED_BLUE = new Color(154, 118, 82, 255);
+const PANEL_TEXT = new Color(133, 86, 47, 255);
+const PANEL_ACCENT = new Color(237, 147, 48, 255);
+const PANEL_ACCENT_SOFT = new Color(255, 239, 212, 255);
+const PANEL_DIVIDER = new Color(235, 206, 166, 255);
+const PANEL_PAGE_MUTED = new Color(170, 133, 93, 255);
+const PANEL_CLOSE_BG = new Color(255, 239, 214, 255);
 
 function submitRankScores(onComplete?: () => void): void {
     const scores = [
@@ -70,7 +76,7 @@ function drawLine(parent: Node, name: string, width: number, y: number): void {
     const line = createNode(name, parent);
     line.setPosition(0, y, 0);
     const g = line.addComponent(Graphics);
-    g.fillColor = COLOR_DIVIDER;
+    g.fillColor = PANEL_DIVIDER;
     g.rect(-width / 2, -1, width, 2);
     g.fill();
 }
@@ -127,11 +133,11 @@ export default class RankPanel extends Component {
         const card = createRoundedCard('card', overlay, this.cardWidth, cardHeight, PANEL_BG, 28, 4, 35);
         card.setPosition(0, 0, 0);
 
-        this.titleLabel = createLabel('title', card, '排行榜', 38, COLOR_TITLE_NAVY, true);
+        this.titleLabel = createLabel('title', card, '关卡榜', 38, PANEL_TEXT, true);
         this.titleLabel.node.setPosition(0, cardHeight / 2 - 58, 0);
         this.titleLabel.node.getComponent(UITransform)!.setContentSize(new Size(this.cardWidth - 120, 54));
 
-        const closeButton = createRoundedButton('close', card, 'X', 58, 58, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 30, 29);
+        const closeButton = createRoundedButton('close', card, 'X', 58, 58, PANEL_CLOSE_BG, PANEL_TEXT, 30, 29);
         closeButton.node.setPosition(this.cardWidth / 2 - 58, cardHeight / 2 - 58, 0);
         closeButton.node.on(Node.EventType.TOUCH_END, () => {
             GameApp.uiManager?.close(UIID.RankPanel);
@@ -151,23 +157,23 @@ export default class RankPanel extends Component {
 
         drawLine(card, 'divider', this.rowWidth, cardHeight / 2 - 162);
 
-        this.myRankLabel = createLabel('myRank', card, '我的排名：加载中', 24, COLOR_TITLE_NAVY, true);
+        this.myRankLabel = createLabel('myRank', card, '我的排名：加载中', 24, PANEL_TEXT, true);
         this.myRankLabel.node.setPosition(0, cardHeight / 2 - 198, 0);
         this.myRankLabel.node.getComponent(UITransform)!.setContentSize(new Size(this.rowWidth, 46));
 
         this.rowsRoot = createNode('rows', card);
         this.rowsRoot.setPosition(0, 0, 0);
 
-        const prevButton = createRoundedButton('prevPage', card, '上一页', 128, 48, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 22, 20);
+        const prevButton = createRoundedButton('prevPage', card, '上一页', 128, 48, PANEL_CLOSE_BG, PANEL_TEXT, 22, 20);
         prevButton.node.setPosition(-150, -cardHeight / 2 + 118, 0);
         prevButton.node.on(Node.EventType.TOUCH_END, () => this.changePage(-1));
         this.prevPageLabel = prevButton.label;
 
-        this.pageLabel = createLabel('pageLabel', card, '1/1', 20, COLOR_DESC_GRAY, true);
+        this.pageLabel = createLabel('pageLabel', card, '1/1', 20, PANEL_PAGE_MUTED, true);
         this.pageLabel.node.setPosition(0, -cardHeight / 2 + 118, 0);
         this.pageLabel.node.getComponent(UITransform)!.setContentSize(new Size(130, 42));
 
-        const nextButton = createRoundedButton('nextPage', card, '下一页', 128, 48, new Color(232, 238, 248, 255), COLOR_TITLE_NAVY, 22, 20);
+        const nextButton = createRoundedButton('nextPage', card, '下一页', 128, 48, PANEL_CLOSE_BG, PANEL_TEXT, 22, 20);
         nextButton.node.setPosition(150, -cardHeight / 2 + 118, 0);
         nextButton.node.on(Node.EventType.TOUCH_END, () => this.changePage(1));
         this.nextPageLabel = nextButton.label;
@@ -200,14 +206,14 @@ export default class RankPanel extends Component {
     private refreshTabs(): void {
         this.paintTab(this.levelTabBg, this.currentType === RANK_LEVEL);
         this.paintTab(this.survivalTabBg, this.currentType === RANK_SURVIVAL);
-        this.levelTabLabel.color = this.currentType === RANK_LEVEL ? COLOR_WHITE : COLOR_TITLE_NAVY;
-        this.survivalTabLabel.color = this.currentType === RANK_SURVIVAL ? COLOR_WHITE : COLOR_TITLE_NAVY;
+        this.levelTabLabel.color = this.currentType === RANK_LEVEL ? COLOR_WHITE : PANEL_TEXT;
+        this.survivalTabLabel.color = this.currentType === RANK_SURVIVAL ? COLOR_WHITE : PANEL_TEXT;
         this.titleLabel.string = rankTypeTitle(this.currentType);
     }
 
     private paintTab(graphics: Graphics, active: boolean): void {
         graphics.clear();
-        graphics.fillColor = active ? COLOR_AD_BLUE : new Color(232, 238, 248, 255);
+        graphics.fillColor = active ? PANEL_ACCENT : PANEL_ACCENT_SOFT;
         graphics.roundRect(-95, -29, 190, 58, 24);
         graphics.fill();
     }
@@ -280,8 +286,8 @@ export default class RankPanel extends Component {
     private updatePageControls(): void {
         const totalPages = this.getTotalPages();
         this.pageLabel.string = `${Math.min(this.currentPage + 1, totalPages)}/${totalPages}`;
-        this.prevPageLabel.color = this.currentPage > 0 ? COLOR_TITLE_NAVY : COLOR_DESC_GRAY;
-        this.nextPageLabel.color = this.currentPage < totalPages - 1 ? COLOR_TITLE_NAVY : COLOR_DESC_GRAY;
+        this.prevPageLabel.color = this.currentPage > 0 ? PANEL_TEXT : PANEL_PAGE_MUTED;
+        this.nextPageLabel.color = this.currentPage < totalPages - 1 ? PANEL_TEXT : PANEL_PAGE_MUTED;
     }
 
     private getTotalPages(): number {
@@ -306,12 +312,12 @@ export default class RankPanel extends Component {
         rank.node.setPosition(-this.rowWidth / 2 + 46, 0, 0);
         rank.node.getComponent(UITransform)!.setContentSize(new Size(58, 40));
 
-        const name = createLabel('name', row, item.name || '玩家', 22, COLOR_TITLE_NAVY, true);
+        const name = createLabel('name', row, item.name || '玩家', 22, PANEL_TEXT, true);
         name.node.setPosition(-30, 0, 0);
         name.node.getComponent(UITransform)!.setContentSize(new Size(this.rowWidth - 230, 40));
         name.horizontalAlign = Label.HorizontalAlign.LEFT;
 
-        const score = createLabel('score', row, formatScore(this.currentType, item.score), 22, COLOR_AD_BLUE, true);
+        const score = createLabel('score', row, formatScore(this.currentType, item.score), 22, PANEL_ACCENT, true);
         score.node.setPosition(this.rowWidth / 2 - 78, 0, 0);
         score.node.getComponent(UITransform)!.setContentSize(new Size(130, 40));
     }

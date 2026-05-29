@@ -54,7 +54,7 @@ export default class PopupPanel extends Component {
             .start();
 
         if (GameApp.popupIndex === 1) {
-            this.dec.string = '牛马雷达：直接锁一格';
+            this.dec.string = '奶茶雷达：直接锁一格';
             this.useBtnLabel.string = '继续游戏';
         } else if (GameApp.popupIndex === 2) {
             this.dec.string = '确认返回主菜单?';
