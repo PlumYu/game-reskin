@@ -405,7 +405,7 @@ export function installDrawGridHud(target: any): void {
         }
 
         const valueLabel = this.survivalFoundCowsLabel as Label | null;
-        this.setCounterPanelCaption(root, '找到牛马:', valueLabel);
+        this.setCounterPanelCaption(root, '找到猫猫:', valueLabel);
         root.active = GameApp.gameMode === GameMode.survival;
         this.updateSurvivalFoundCowsLabel?.();
         return root;
@@ -618,7 +618,7 @@ export function installDrawGridHud(target: any): void {
         const labels: Label[] = [];
         this.collectLabels(root, labels);
 
-        const leftLabel = labels.find(label => label.string.indexOf('每个部门') >= 0 || label.string.indexOf('每种颜色') >= 0 || label.string.indexOf('每种气球') >= 0);
+        const leftLabel = labels.find(label => label.string.indexOf('每个部门') >= 0 || label.string.indexOf('每种颜色') >= 0 || label.string.indexOf('每种气球') >= 0 || label.string.indexOf('每种样式') >= 0);
         const middleLabel = labels.find(label => label.string.indexOf('每行') >= 0 && label.string.indexOf('每列') >= 0);
         const rightLabel = labels.find(label => label.string.indexOf('不能相邻') >= 0 || label.string.indexOf('不能挨着') >= 0);
         if (!leftLabel || !middleLabel || !rightLabel) {
@@ -1679,11 +1679,11 @@ export function installDrawGridHud(target: any): void {
         }
     },
     getHintKindTitle: function (kind: HintKind): string {
-        return kind === 'cow' ? '牛马显示器' : '提示';
+        return kind === 'cow' ? '猫猫雷达' : '提示';
     },
     getHintKindDescription: function (kind: HintKind): string {
         return kind === 'cow'
-            ? '使用牛马显示器，可以直接显示\n一头牛马。'
+            ? '使用猫猫雷达，可以直接显示\n一只猫猫。'
             : '卡住了？立刻显示\n您的下一步。';
     },
     applyHintPurchaseIcon: function (card: Node, kind: HintKind): void {
@@ -2043,6 +2043,54 @@ export function installDrawGridHud(target: any): void {
             SfxManager.instance.playUiClick();
             this.closeHintUnlockGuidePanel?.(true);
         }, this);
+
+        const guideInfoPanel = createNode('HintUnlockGuideInfoPanel', card);
+        guideInfoPanel.getComponent(CcUITransform)?.setContentSize(cardWidth - 52, 132);
+        guideInfoPanel.setPosition(0, -cardHeight * 0.33, 0);
+        const guideInfoG = guideInfoPanel.addComponent(Graphics);
+        guideInfoG.fillColor = new Color(255, 249, 236, 236);
+        guideInfoG.roundRect(-(cardWidth - 52) / 2, -66, cardWidth - 52, 132, 24);
+        guideInfoG.fill();
+        guideInfoG.strokeColor = new Color(237, 171, 82, 220);
+        guideInfoG.lineWidth = 2;
+        guideInfoG.roundRect(-(cardWidth - 56) / 2, -62, cardWidth - 56, 124, 22);
+        guideInfoG.stroke();
+
+        const guideTitle = createLabel(
+            'HintUnlockGuideTitle',
+            guideInfoPanel,
+            kind === 'cow' ? '猫猫雷达已解锁' : '排除提示已解锁',
+            24,
+            new Color(133, 80, 35, 255),
+            true
+        );
+        guideTitle.node.getComponent(CcUITransform)?.setContentSize(cardWidth - 92, 34);
+        guideTitle.node.setPosition(0, 28, 0);
+
+        const guideDesc = createLabel(
+            'HintUnlockGuideDesc',
+            guideInfoPanel,
+            kind === 'cow'
+                ? '卡关时直接锁定一只猫猫，少走弯路。'
+                : '帮你高亮一批可排除格子，点一键应用更省事。',
+            19,
+            new Color(121, 117, 109, 255)
+        );
+        guideDesc.node.getComponent(CcUITransform)?.setContentSize(cardWidth - 104, 46);
+        guideDesc.node.setPosition(0, -6, 0);
+        guideDesc.lineHeight = 25;
+        guideDesc.overflow = Label.Overflow.SHRINK;
+
+        const guideHint = createLabel(
+            'HintUnlockGuideTapHint',
+            guideInfoPanel,
+            '点击任意位置继续',
+            17,
+            new Color(198, 140, 73, 255),
+            true
+        );
+        guideHint.node.getComponent(CcUITransform)?.setContentSize(cardWidth - 120, 28);
+        guideHint.node.setPosition(0, -42, 0);
 
     },
     closeHintUnlockGuidePanel: function (animate: boolean = true): void {

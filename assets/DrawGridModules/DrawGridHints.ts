@@ -23,31 +23,21 @@ type CowFrameLayout = {
 };
 export function installDrawGridHints(target: any): void {
     Object.assign(target.prototype, {
-    getHintColorDisplayName: function (hex: string): string {
-        const normalized = (hex || '').toLowerCase();
-        const paletteIndex = this.palette.findIndex((color: string) => (color || '').toLowerCase() === normalized);
-        const rawName = paletteIndex >= 0 && paletteIndex < this.paletteNames.length
-            ? `${this.paletteNames[paletteIndex] || ''}`
-            : '';
-        if (!rawName) return '这种颜色';
-        return rawName.endsWith('色') ? rawName : `${rawName}色`;
+    getHintColorDisplayName: function (_hex: string): string {
+        return '这种样式';
     },
-    getHintColorCellName: function (hex: string): string {
-        const colorName = this.getHintColorDisplayName(hex);
-        return colorName === '这种颜色' ? '这种颜色的格子' : `${colorName}格子`;
+    getHintColorCellName: function (_hex: string): string {
+        return '这种样式的格子';
     },
-    getHintColorCowName: function (hex: string): string {
-        const colorName = this.getHintColorDisplayName(hex);
-        return colorName === '这种颜色' ? '这种颜色的牛马' : `${colorName}牛马`;
+    getHintColorCowName: function (_hex: string): string {
+        return '这种样式对应的猫猫';
     },
     getHintColorCellNameByIndex: function (index: number): string {
         return this.getHintColorCellName(this.gridColors[index]);
     },
     joinHintColorCellNames: function (colors: string[]): string {
-        const names = colors
-            .map((hex: string) => this.getHintColorDisplayName(hex))
-            .filter((name: string, index: number, list: string[]) => !!name && list.indexOf(name) === index);
-        return names.length > 0 ? `${names.join('、')}格子` : '这些颜色的格子';
+        const uniqueCount = new Set(colors.filter((hex: string) => !!hex)).size;
+        return uniqueCount > 1 ? '这几种样式的格子' : '这种样式的格子';
     },
     showHint: function () {
         this.hideSceneHintGuidePrompt?.();
@@ -95,7 +85,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '这个格子被你排除了，但它其实就是牛马的位置；点一键应用，把它找出来。';
+                label.string = '这个格子被你排除了，但它其实就是猫猫的位置；点一键应用，把它找出来。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -178,7 +168,7 @@ export function installDrawGridHints(target: any): void {
 
         const label = this.hintPanelNode.getComponentInChildren(Label);
         if (label) {
-            label.string = `${reasonColorCellName || '这种颜色的格子'}只剩这一个还可能藏牛马，所以牛马就在这里。`;
+            label.string = `${reasonColorCellName || '这种样式的格子'}只剩这一个还可能藏着猫猫，所以猫猫就在这里。`;
         }
         this.setHintPanelShown(true);
         this.renderGrid();
@@ -212,7 +202,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '这行和这列已经有牛马了；每行每列只能有1只，所以同排同列其他格子都可以排除。';
+                label.string = '这行和这列已经锁定猫猫了；每行每列只能有1只，所以同排同列其他格子都可以排除。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -240,7 +230,7 @@ export function installDrawGridHints(target: any): void {
 
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = '牛马不能挨着牛马；这只牛马周围一圈都不可能再有牛马，可以排除。';
+                label.string = '猫猫不能挨着猫猫；这只猫猫周围一圈都不可能再有猫猫，可以排除。';
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -288,7 +278,7 @@ export function installDrawGridHints(target: any): void {
                 if (label) {
                     const colorCellName = this.getHintColorCellName(color);
                     const colorCowName = this.getHintColorCowName(color);
-                    label.string = `剩下的${colorCellName}都在这一行里，所以${colorCowName}一定在这一行；这一行里的其他颜色格子可以排除。`;
+                    label.string = `剩下的${colorCellName}都在这一行里，所以${colorCowName}一定在这一行；这一行里的其他格子可以排除。`;
                 }
                 this.setHintPanelShown(true);
                 this.renderGrid();
@@ -318,7 +308,7 @@ export function installDrawGridHints(target: any): void {
                 if (label) {
                     const colorCellName = this.getHintColorCellName(color);
                     const colorCowName = this.getHintColorCowName(color);
-                    label.string = `剩下的${colorCellName}都在这一列里，所以${colorCowName}一定在这一列；这一列里的其他颜色格子可以排除。`;
+                    label.string = `剩下的${colorCellName}都在这一列里，所以${colorCowName}一定在这一列；这一列里的其他格子可以排除。`;
                 }
                 this.setHintPanelShown(true);
                 this.renderGrid();
@@ -484,7 +474,7 @@ export function installDrawGridHints(target: any): void {
             const colorCellNames = this.joinHintColorCellNames(occupyingColors);
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = `剩下的${colorCellNames}只能分布在这${rows.length}行里；这些行里的其他颜色格子不会有牛马，可以排除。`;
+                label.string = `剩下的${colorCellNames}只能分布在这${rows.length}行里；这些行里的其他格子不会藏猫猫，可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -544,7 +534,7 @@ export function installDrawGridHints(target: any): void {
             const colorCellNames = this.joinHintColorCellNames(occupyingColors);
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
-                label.string = `剩下的${colorCellNames}只能分布在这${cols.length}列里；这些列里的其他颜色格子不会有牛马，可以排除。`;
+                label.string = `剩下的${colorCellNames}只能分布在这${cols.length}列里；这些列里的其他格子不会藏猫猫，可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();
@@ -621,7 +611,7 @@ export function installDrawGridHints(target: any): void {
             const label = this.hintPanelNode.getComponentInChildren(Label);
             if (label) {
                 const colorCellName = this.getHintColorCellName(neighborOnlyColor);
-                label.string = `如果这个格子是牛马，旁边的${colorCellName}就没有合法位置了；所以这个格子可以排除。`;
+                label.string = `如果这个格子藏着猫猫，旁边的${colorCellName}就没有合法位置了；所以这个格子可以排除。`;
             }
             this.setHintPanelShown(true);
             this.renderGrid();

@@ -20,15 +20,15 @@ const { ccclass } = _decorator;
 
 const PANEL_WIDTH = 640;
 const PANEL_HEIGHT = 1030;
-const GREEN_REVIVE = new Color(132, 204, 14, 255);
-const BLUE_RESTART = new Color(36, 181, 232, 255);
-const BLUE_DOUBLE = new Color(52, 139, 236, 255);
-const WHITE_BUTTON = new Color(255, 255, 255, 255);
-const GOLD_TEXT = new Color(255, 214, 54, 255);
-const RED_TEXT = new Color(255, 66, 64, 255);
-const SOFT_WHITE = new Color(255, 255, 255, 238);
-const MUTED_WHITE = new Color(255, 255, 255, 186);
-const DARK_TEXT = new Color(52, 66, 96, 255);
+const GREEN_REVIVE = new Color(234, 122, 74, 255);
+const BLUE_RESTART = new Color(240, 157, 72, 255);
+const BLUE_DOUBLE = new Color(230, 171, 78, 255);
+const WHITE_BUTTON = new Color(255, 247, 236, 255);
+const GOLD_TEXT = new Color(255, 216, 97, 255);
+const RED_TEXT = new Color(240, 118, 79, 255);
+const SOFT_WHITE = new Color(255, 245, 228, 245);
+const MUTED_WHITE = new Color(255, 232, 204, 196);
+const DARK_TEXT = new Color(110, 76, 48, 255);
 const MENU_IDLE_STATIC_PATH = 'characters/menu_idle_static';
 const MENU_IDLE_DIR_PATH = 'characters/menu_idle';
 const SETTLEMENT_MASCOT_FRAME_INTERVAL = 0.12;
@@ -126,7 +126,7 @@ export default class SurvivalOverPanel extends Component {
             g.fill();
         }
 
-        const title = createLabel('SurvivalSettlementTitle', parent, '关卡结算', 70, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
+        const title = createLabel('SurvivalSettlementTitle', parent, this.isWin ? '找猫生存成功' : '找猫生存失败', 62, this.isWin ? GOLD_TEXT : COLOR_WHITE, true);
         title.node.setPosition(0, 248, 0);
         this.setLabelSize(title, 600, 92);
         this.addTextOutline(title, this.isWin ? new Color(255, 255, 255, 230) : new Color(66, 66, 66, 230), this.isWin ? 5 : 7);
@@ -180,13 +180,13 @@ export default class SurvivalOverPanel extends Component {
         found.setPosition(0, 114, 0);
         found.getComponent(UITransform)!.setContentSize(new Size(570, 64));
         this.createMenuIdleMascot(found, -188, 0, 58, 58);
-        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '找到了', 34, COLOR_WHITE, true);
+        const foundPrefix = createLabel('SurvivalFoundPrefix', found, '找到', 34, COLOR_WHITE, true);
         foundPrefix.node.setPosition(-70, 0, 0);
         this.setLabelSize(foundPrefix, 150, 50);
         const foundNumber = createLabel('SurvivalFoundNumber', found, `${this.settlementFoundCowNum}`, 44, RED_TEXT, true);
         foundNumber.node.setPosition(43, 0, 0);
         this.setLabelSize(foundNumber, 58, 58);
-        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '只牛', 34, COLOR_WHITE, true);
+        const foundSuffix = createLabel('SurvivalFoundSuffix', found, '只猫', 34, COLOR_WHITE, true);
         foundSuffix.node.setPosition(123, 0, 0);
         this.setLabelSize(foundSuffix, 100, 50);
 
@@ -263,12 +263,12 @@ export default class SurvivalOverPanel extends Component {
             this.reviveContentNode = labelParent;
         }
         const textOffsetX = tone === 'revive' ? 0 : (icon ? Math.min(34, width * 0.08) : 0);
-        const titleLabel = createLabel('title', labelParent, title, height >= 100 ? 42 : 34, tone === 'friend' ? new Color(224, 64, 54, 255) : COLOR_WHITE, true);
+        const titleLabel = createLabel('title', labelParent, title, height >= 100 ? 42 : 34, tone === 'friend' ? new Color(186, 88, 64, 255) : COLOR_WHITE, true);
         titleLabel.node.setPosition(textOffsetX, subtitle ? 13 : 0, 0);
         this.setLabelSize(titleLabel, width - (icon ? 126 : 38), subtitle ? Math.round(height * 0.52) : height - 8);
 
         if (subtitle) {
-            const subColor = tone === 'restart' ? new Color(34, 86, 138, 255) : COLOR_WHITE;
+            const subColor = tone === 'restart' ? new Color(123, 87, 58, 255) : COLOR_WHITE;
             const subtitleLabel = createLabel('subtitle', labelParent, subtitle, height >= 100 ? 25 : 21, subColor, true);
             subtitleLabel.node.setPosition(textOffsetX, -24, 0);
             this.setLabelSize(subtitleLabel, width - (icon ? 126 : 38), Math.round(height * 0.36));
@@ -287,16 +287,16 @@ export default class SurvivalOverPanel extends Component {
         const x = -width / 2;
         const y = -height / 2;
         let fill = BLUE_RESTART;
-        let shadow = new Color(0, 72, 120, 78);
+        let shadow = new Color(138, 95, 44, 78);
         if (tone === 'revive') {
             fill = GREEN_REVIVE;
-            shadow = new Color(48, 105, 6, 88);
+            shadow = new Color(154, 82, 47, 88);
         } else if (tone === 'double') {
             fill = BLUE_DOUBLE;
-            shadow = new Color(18, 74, 150, 86);
+            shadow = new Color(152, 103, 45, 86);
         } else if (tone === 'friend') {
             fill = WHITE_BUTTON;
-            shadow = new Color(22, 30, 44, 76);
+            shadow = new Color(132, 94, 58, 62);
         } else if (tone === 'disabled') {
             fill = new Color(146, 156, 170, 230);
             shadow = new Color(44, 50, 62, 54);
@@ -321,7 +321,7 @@ export default class SurvivalOverPanel extends Component {
         iconNode.setPosition(x, y, 0);
         iconNode.getComponent(UITransform)!.setContentSize(new Size(58, 58));
         const g = iconNode.addComponent(Graphics);
-        const color = tone === 'friend' ? new Color(224, 64, 54, 255) : COLOR_WHITE;
+        const color = tone === 'friend' ? new Color(186, 88, 64, 255) : COLOR_WHITE;
         if (icon === 'clock') {
             g.fillColor = new Color(255, 238, 170, 255);
             g.circle(0, 0, 20);
@@ -375,7 +375,7 @@ export default class SurvivalOverPanel extends Component {
         node.setPosition(x, y, 0);
         node.getComponent(UITransform)!.setContentSize(new Size(76, 76));
         const g = node.addComponent(Graphics);
-        g.fillColor = new Color(98, 126, 238, 255);
+        g.fillColor = new Color(238, 151, 69, 255);
         g.circle(0, 0, 38);
         g.fill();
         g.strokeColor = new Color(255, 255, 255, 120);
@@ -393,7 +393,7 @@ export default class SurvivalOverPanel extends Component {
         badge.getComponent(UITransform)!.setContentSize(new Size(52, 42));
         badge.setRotationFromEuler(0, 0, -12);
         const g = badge.addComponent(Graphics);
-        g.fillColor = new Color(28, 28, 32, 255);
+        g.fillColor = new Color(135, 92, 52, 255);
         g.roundRect(-22, -17, 44, 34, 6);
         g.fill();
         g.fillColor = COLOR_WHITE;
@@ -530,7 +530,7 @@ export default class SurvivalOverPanel extends Component {
         node.setPosition(x, y, 0);
         const g = node.addComponent(Graphics);
         const s = size / 48;
-        g.fillColor = new Color(20, 180, 255, 255);
+        g.fillColor = new Color(255, 182, 72, 255);
         g.moveTo(-5 * s, 22 * s);
         g.lineTo(-20 * s, -3 * s);
         g.lineTo(-5 * s, -3 * s);
@@ -546,7 +546,7 @@ export default class SurvivalOverPanel extends Component {
         const line = createNode('Divider', parent);
         line.setPosition(x, y, 0);
         const g = line.addComponent(Graphics);
-        g.strokeColor = new Color(255, 255, 255, 155);
+        g.strokeColor = new Color(255, 228, 188, 168);
         g.lineWidth = 3;
         g.moveTo(-width / 2, 0);
         g.lineTo(width / 2, 0);

@@ -139,7 +139,7 @@ export default class MainPanel extends Component {
         const subLine = createNode('subLine', titleNode);
         subLine.setPosition(0, -scaleLayout(127, layout), 0);
         const lg = subLine.addComponent(Graphics);
-        lg.strokeColor = new Color(86, 134, 210, 115);
+        lg.strokeColor = new Color(240, 170, 84, 145);
         lg.lineWidth = Math.max(1, scaleLayout(2, layout));
         lg.moveTo(-scaleLayout(150, layout), 0);
         lg.lineTo(-scaleLayout(40, layout), 0);
@@ -150,7 +150,7 @@ export default class MainPanel extends Component {
 
         const diamond = createNode('diamond', subLine);
         const dg = diamond.addComponent(Graphics);
-        dg.fillColor = new Color(74, 125, 218, 210);
+        dg.fillColor = new Color(238, 145, 44, 225);
         const diamondSize = scaleLayout(6, layout);
         dg.moveTo(0, diamondSize);
         dg.lineTo(diamondSize, 0);
@@ -159,8 +159,8 @@ export default class MainPanel extends Component {
         dg.close();
         dg.fill();
 
-        const subtitle = createLabel('subtitle', titleNode, '看着简单，玩着上头',
-            scaleLayout(27, layout), new Color(73, 116, 192, 225), true);
+        const subtitle = createLabel('subtitle', titleNode, '轻点排除，把猫猫找出来',
+            scaleLayout(27, layout), new Color(149, 95, 47, 230), true);
         subtitle.node.getComponent(UITransform)!.setContentSize(scaleLayout(380, layout), scaleLayout(44, layout));
         subtitle.node.setPosition(0, -scaleLayout(161, layout), 0);
     }
@@ -310,13 +310,18 @@ export default class MainPanel extends Component {
         const survivalImageW = Math.round(modeImageW * 512 / 501);
         const survivalImageH = Math.round(modeImageH * 370 / 336);
         const modeH = modeImageH;
-        const modeTextW = modeImageW * 0.58;
-        const modeLabelX = -modeImageW * 0.21;
-        const dailyTextX = modeLabelX + scaleLayout(20, layout);
-        const survivalTextX = modeLabelX + scaleLayout(18, layout);
-        const survivalFreeTextX = survivalTextX - scaleLayout(12, layout);
-        const dailyTimerY = -scaleLayout(66, layout);
+        const modeTextW = modeImageW * 0.5;
+        const modePlateW = modeTextW + scaleLayout(40, layout);
+        const modePlateH = scaleLayout(142, layout);
+        const dailyTextX = scaleLayout(26, layout);
+        const survivalTextX = scaleLayout(28, layout);
+        const survivalFreeTextX = survivalTextX;
+        const dailyTimerY = -scaleLayout(56, layout);
         const modeRowY = -scaleLayout(62, layout);
+        const dailyCardX = -(modeW + modeGap) / 2 - scaleLayout(10, layout);
+        const survivalCardX = (modeW + modeGap) / 2 + scaleLayout(12, layout);
+        const dailyCardY = modeRowY + scaleLayout(16, layout);
+        const survivalCardY = modeRowY - scaleLayout(12, layout);
 
         // classicBtn: main level entry
         const levelNum = GameApp.user.level;
@@ -341,31 +346,32 @@ export default class MainPanel extends Component {
 
         // survivalBar: survival mode entry
         const survivalNode = createNode('survivalBar', bottomSection);
-        survivalNode.setPosition((modeW + modeGap) / 2, modeRowY, 0);
+        survivalNode.setPosition(survivalCardX, survivalCardY, 0);
+        survivalNode.angle = 2;
         const survivalUt = survivalNode.getComponent(UITransform)!;
         survivalUt.setContentSize(new Size(modeW, modeH));
         this.createMenuImage('survivalButtonImage', survivalNode, 'images/menu_survival_button', survivalImageW, survivalImageH, v3(0, 0, 0));
         this.createSparkle('survivalDecorSparkle', survivalNode, scaleLayout(18, layout), -survivalImageW * 0.22, survivalImageH * 0.24);
-        const survTitle = createLabel('survTitle', survivalNode, '生存模式', scaleLayout(34, layout), COLOR_WHITE, true);
-        survTitle.horizontalAlign = Label.HorizontalAlign.LEFT;
+        const survTitle = createLabel('survTitle', survivalNode, '生存模式', scaleLayout(33, layout), new Color(70, 101, 82, 255), true);
+        survTitle.horizontalAlign = Label.HorizontalAlign.CENTER;
         survTitle.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(42, layout)));
-        survTitle.node.setPosition(survivalTextX, scaleLayout(48, layout), 0);
+        survTitle.node.setPosition(survivalTextX, scaleLayout(34, layout), 0);
         const survTitleOutline = survTitle.node.addComponent(LabelOutline);
-        survTitleOutline.color = new Color(20, 151, 119, 160);
+        survTitleOutline.color = new Color(255, 255, 255, 132);
         survTitleOutline.width = scaleLayout(2, layout);
-        const survFree = createLabel('survFree', survivalNode, '今日免费', scaleLayout(23, layout), new Color(235, 255, 245, 245), true);
-        survFree.horizontalAlign = Label.HorizontalAlign.LEFT;
+        const survFree = createLabel('survFree', survivalNode, '今日免费', scaleLayout(22, layout), new Color(123, 95, 62, 255), true);
+        survFree.horizontalAlign = Label.HorizontalAlign.CENTER;
         survFree.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(32, layout)));
-        survFree.node.setPosition(survivalFreeTextX, scaleLayout(8, layout), 0);
-        const survFreeCount = createLabel('survFreeCount', survivalNode, '1/2', scaleLayout(23, layout), new Color(235, 255, 245, 245), true);
-        survFreeCount.horizontalAlign = Label.HorizontalAlign.LEFT;
+        survFree.node.setPosition(survivalFreeTextX, -scaleLayout(2, layout), 0);
+        const survFreeCount = createLabel('survFreeCount', survivalNode, '1/2', scaleLayout(24, layout), new Color(71, 132, 98, 255), true);
+        survFreeCount.horizontalAlign = Label.HorizontalAlign.CENTER;
         survFreeCount.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(32, layout)));
-        survFreeCount.node.setPosition(survivalFreeTextX, -scaleLayout(25, layout), 0);
+        survFreeCount.node.setPosition(survivalFreeTextX, -scaleLayout(28, layout), 0);
 
         const adPrompt = createNode('survAdPrompt', survivalNode);
         adPrompt.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(36, layout)));
-        adPrompt.setPosition(modeLabelX + scaleLayout(8, layout), -scaleLayout(17, layout), 0);
-        const adTextColor = new Color(235, 255, 245, 245);
+        adPrompt.setPosition(survivalTextX, -scaleLayout(28, layout), 0);
+        const adTextColor = new Color(124, 95, 63, 255);
         const adPrefix = createLabel('survAdPromptPrefix', adPrompt, '看', scaleLayout(21, layout), adTextColor, true);
         adPrefix.node.getComponent(UITransform)!.setContentSize(new Size(scaleLayout(30, layout), scaleLayout(34, layout)));
         adPrefix.node.setPosition(-scaleLayout(62, layout), 0, 0);
@@ -383,26 +389,27 @@ export default class MainPanel extends Component {
 
         // dailyChallengeCard: secondary daily challenge entry
         const dailyNode = createNode('dailyChallengeCard', bottomSection);
-        dailyNode.setPosition(-(modeW + modeGap) / 2, modeRowY, 0);
+        dailyNode.setPosition(dailyCardX, dailyCardY, 0);
+        dailyNode.angle = -2;
         const dailyUt = dailyNode.getComponent(UITransform)!;
         dailyUt.setContentSize(new Size(modeW, modeH));
         this.createMenuImage('dailyButtonImage', dailyNode, 'images/menu_daily_button', modeImageW, modeImageH, v3(0, 0, 0));
         this.createSparkle('dailyDecorSparkle', dailyNode, scaleLayout(18, layout), modeImageW * 0.36, modeImageH * 0.33);
-        const dailyTitle = createLabel('dailyTitle', dailyNode, '每日挑战', scaleLayout(34, layout), COLOR_WHITE, true);
-        dailyTitle.horizontalAlign = Label.HorizontalAlign.LEFT;
+        const dailyTitle = createLabel('dailyTitle', dailyNode, '每日挑战', scaleLayout(33, layout), new Color(121, 76, 146, 255), true);
+        dailyTitle.horizontalAlign = Label.HorizontalAlign.CENTER;
         dailyTitle.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(42, layout)));
-        dailyTitle.node.setPosition(dailyTextX, scaleLayout(47, layout), 0);
+        dailyTitle.node.setPosition(dailyTextX, scaleLayout(34, layout), 0);
         const dailyTitleOutline = dailyTitle.node.addComponent(LabelOutline);
-        dailyTitleOutline.color = new Color(114, 72, 210, 170);
+        dailyTitleOutline.color = new Color(255, 255, 255, 132);
         dailyTitleOutline.width = scaleLayout(2, layout);
-        const dailySub = createLabel('dailySub', dailyNode, '全网同一关', scaleLayout(20, layout), new Color(247, 242, 255, 235), true);
-        dailySub.horizontalAlign = Label.HorizontalAlign.LEFT;
+        const dailySub = createLabel('dailySub', dailyNode, '全网同一关', scaleLayout(20, layout), new Color(128, 95, 78, 255), true);
+        dailySub.horizontalAlign = Label.HorizontalAlign.CENTER;
         dailySub.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(28, layout)));
-        dailySub.node.setPosition(dailyTextX, scaleLayout(13, layout), 0);
-        const dailyFree = createLabel('dailyFree', dailyNode, '免费 1/1', scaleLayout(21, layout), new Color(255, 255, 255, 245), true);
-        dailyFree.horizontalAlign = Label.HorizontalAlign.LEFT;
+        dailySub.node.setPosition(dailyTextX, scaleLayout(2, layout), 0);
+        const dailyFree = createLabel('dailyFree', dailyNode, '免费 1/1', scaleLayout(21, layout), new Color(128, 95, 78, 255), true);
+        dailyFree.horizontalAlign = Label.HorizontalAlign.CENTER;
         dailyFree.node.getComponent(UITransform)!.setContentSize(new Size(modeTextW, scaleLayout(30, layout)));
-        dailyFree.node.setPosition(dailyTextX, -scaleLayout(17, layout), 0);
+        dailyFree.node.setPosition(dailyTextX, -scaleLayout(24, layout), 0);
         const clockSize = scaleLayout(30, layout);
         const dailyClockX = dailyTextX - modeTextW / 2 + scaleLayout(42, layout);
         const dailyClock = createNode('dailyTimerClock', dailyNode);
@@ -411,12 +418,30 @@ export default class MainPanel extends Component {
         this.drawDailyClockIcon(dailyClock, clockSize);
         const dailyTimerW = scaleLayout(96, layout);
         const clockTextGap = scaleLayout(2, layout);
-        const dailyTimer = createLabel('dailyTimer', dailyNode, '--:--:--', scaleLayout(21, layout), new Color(122, 82, 205, 255), true);
+        const dailyTimer = createLabel('dailyTimer', dailyNode, '--:--:--', scaleLayout(21, layout), new Color(144, 86, 175, 255), true);
         dailyTimer.horizontalAlign = Label.HorizontalAlign.LEFT;
         dailyTimer.overflow = Label.Overflow.CLAMP;
         dailyTimer.node.getComponent(UITransform)!.setContentSize(new Size(dailyTimerW, scaleLayout(30, layout)));
         dailyTimer.node.setPosition(dailyClockX + clockSize / 2 + clockTextGap + dailyTimerW / 2, dailyTimerY, 0);
         this.dailyChallengeCard = dailyNode;
+    }
+
+    private createModeInfoPlate(name: string, parent: Node, width: number, height: number, x: number, y: number, fill: Color, stroke: Color, shadow: Color): Node {
+        const plate = createNode(name, parent);
+        plate.setPosition(x, y, 0);
+        plate.getComponent(UITransform)!.setContentSize(new Size(width, height));
+        const g = plate.addComponent(Graphics);
+        g.fillColor = shadow;
+        g.roundRect(-width / 2 + 2, -height / 2 - 5, width - 4, height, 22);
+        g.fill();
+        g.fillColor = fill;
+        g.roundRect(-width / 2, -height / 2, width, height, 22);
+        g.fill();
+        g.strokeColor = stroke;
+        g.lineWidth = 2;
+        g.roundRect(-width / 2 + 1, -height / 2 + 1, width - 2, height - 2, 21);
+        g.stroke();
+        return plate;
     }
 
     private buildRankShortcut(layout: AdaptiveLayout, foregroundLiftY: number): void {
@@ -434,6 +459,13 @@ export default class MainPanel extends Component {
         shortcut.getComponent(UITransform)!.setContentSize(new Size(touchW, touchH));
         const rankImage = this.createMenuImage('rankEntryImage', shortcut, 'images/menu_rank_entry', rankW, shortcutH);
         this.createSparkle('rankEntrySparkle', rankImage, scaleLayout(13, layout), -rankW * 0.2, shortcutH * 0.22);
+        this.createModeInfoPlate('rankLabelPlate', rankImage, rankW * 0.72, scaleLayout(40, layout), 0, -shortcutH * 0.28, new Color(255, 248, 236, 228), new Color(168, 100, 36, 156), new Color(121, 82, 36, 20));
+        const rankLabel = createLabel('rankEntryLabel', rankImage, '排行榜', scaleLayout(24, layout), new Color(121, 75, 38, 255), true);
+        rankLabel.node.getComponent(UITransform)!.setContentSize(new Size(rankW * 0.72, scaleLayout(34, layout)));
+        rankLabel.node.setPosition(0, -shortcutH * 0.27, 0);
+        const rankOutline = rankLabel.node.addComponent(LabelOutline);
+        rankOutline.color = new Color(255, 255, 255, 132);
+        rankOutline.width = Math.max(2, scaleLayout(3, layout));
         addButtonFeedback(shortcut);
         this.rankShortcut = shortcut;
 
@@ -457,7 +489,7 @@ export default class MainPanel extends Component {
         menu.addComponent(BlockInputEvents);
         const bg = menu.addComponent(Graphics);
         this.drawRankMenuSurface(bg, menuW, menuH);
-        bg.strokeColor = new Color(226, 232, 244, 210);
+        bg.strokeColor = new Color(232, 202, 160, 220);
         bg.lineWidth = Math.max(1, scaleLayout(1, layout));
         bg.moveTo(-menuW / 2 + scaleLayout(16, layout), 0);
         bg.lineTo(menuW / 2 - scaleLayout(16, layout), 0);
@@ -472,13 +504,13 @@ export default class MainPanel extends Component {
 
     private drawRankMenuSurface(g: Graphics, width: number, height: number): void {
         this.drawRankMenuPath(g, width, height, 4, -7);
-        g.fillColor = new Color(112, 144, 190, 64);
+        g.fillColor = new Color(154, 101, 46, 56);
         g.fill();
 
         this.drawRankMenuPath(g, width, height, 0, 0);
-        g.fillColor = new Color(255, 255, 255, 242);
+        g.fillColor = new Color(255, 248, 236, 246);
         g.fill();
-        g.strokeColor = new Color(31, 39, 56, 160);
+        g.strokeColor = new Color(208, 146, 68, 190);
         g.lineWidth = 3;
         g.stroke();
 
@@ -518,14 +550,14 @@ export default class MainPanel extends Component {
         entry.setPosition(0, y, 0);
         entry.getComponent(UITransform)!.setContentSize(new Size(width, height));
         const buttonBg = entry.addComponent(Graphics);
-        buttonBg.fillColor = new Color(239, 246, 255, 220);
+        buttonBg.fillColor = new Color(255, 241, 214, 238);
         buttonBg.roundRect(-width / 2 + 10, -height / 2 + 4, width - 20, height - 8, 12);
         buttonBg.fill();
-        buttonBg.strokeColor = new Color(180, 211, 248, 170);
+        buttonBg.strokeColor = new Color(235, 174, 86, 190);
         buttonBg.lineWidth = 1.5;
         buttonBg.roundRect(-width / 2 + 10, -height / 2 + 4, width - 20, height - 8, 12);
         buttonBg.stroke();
-        const label = createLabel(name + 'Label', entry, text, 24, new Color(48, 96, 178, 255), true);
+        const label = createLabel(name + 'Label', entry, text, 24, new Color(136, 84, 39, 255), true);
         label.node.getComponent(UITransform)!.setContentSize(new Size(width - 24, height));
         addButtonFeedback(entry);
         return entry;

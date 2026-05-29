@@ -13,8 +13,8 @@ import {
 
 const { ccclass } = _decorator;
 
-const FAIL_RED = new Color(248, 60, 52, 255);
-const GOLD = new Color(255, 207, 42, 255);
+const FAIL_RED = new Color(235, 114, 72, 255);
+const GOLD = new Color(255, 196, 82, 255);
 const TEXT_SHADOW = new Color(0, 0, 0, 115);
 const REVIVE_BUTTON_WIDTH = 336;
 const REVIVE_BUTTON_HEIGHT = 96;
@@ -51,15 +51,15 @@ export default class FailPanel extends Component {
         const heartGap = 286;
         const bottomY = layout.bottomY + scaleLayout(356, layout);
 
-        const title = this.createShadowLabel('title', this.contentRoot, '失败了~！', 76, COLOR_WHITE, true);
+        const title = this.createShadowLabel('title', this.contentRoot, '猫猫溜走了！', 76, COLOR_WHITE, true);
         title.setPosition(0, titleY, 0);
 
-        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '只会搞抽象，却搞不定我~！', 34, GOLD, true);
+        const subtitle = this.createShadowLabel('subtitle', this.contentRoot, '差一点就把它们找到了', 34, GOLD, true);
         subtitle.setPosition(-34, titleY - subtitleGap, 0);
         this.createNiumaBadge(this.contentRoot, 224, titleY - subtitleGap + 12, 112);
 
         this.heartBalloonNode = this.createHeartBalloon(this.contentRoot, 0, titleY - heartGap, 188);
-        const life = this.createShadowLabel('lifeHint', this.contentRoot, '再获得1条生命', 40, COLOR_WHITE, true);
+        const life = this.createShadowLabel('lifeHint', this.contentRoot, '再获得1次机会', 40, COLOR_WHITE, true);
         life.setPosition(0, titleY - 455, 0);
 
         const remainingRow = createNode('remainingRow', this.contentRoot);
@@ -275,10 +275,10 @@ export default class FailPanel extends Component {
         g.fillColor = new Color(0, 0, 0, 68);
         g.circle(size * 0.04, -size * 0.05, size * 0.48);
         g.fill();
-        g.fillColor = new Color(142, 190, 82, 255);
+        g.fillColor = new Color(238, 170, 82, 255);
         g.circle(0, 0, size * 0.47);
         g.fill();
-        g.strokeColor = COLOR_WHITE;
+        g.strokeColor = new Color(255, 247, 233, 255);
         g.lineWidth = Math.max(4, size * 0.07);
         g.circle(0, 0, size * 0.43);
         g.stroke();

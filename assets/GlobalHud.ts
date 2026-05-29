@@ -34,7 +34,7 @@ const HUD_COUNTDOWN_BG = new Color(238, 241, 246, 230);
 const HUD_COUNTDOWN_SHADOW = new Color(90, 104, 128, 46);
 const HUD_COIN_PILL_WIDTH = 116;
 const HUD_COIN_PILL_HEIGHT = 46;
-const HUD_STAMINA_PILL_WIDTH = 190;
+const HUD_STAMINA_PILL_WIDTH = 252;
 const HUD_STAMINA_PILL_HEIGHT = 65;
 const HUD_STAMINA_LEFT_OFFSET = -16;
 const HUD_IMAGE_PILL_PATH = 'images/hud_pill_base';
@@ -268,11 +268,11 @@ export default class GlobalHud extends Component {
         this.addImagePillSurface(this.staminaNode, staminaPillWidth, staminaPillHeight, HUD_STAMINA_FRAME_PATH);
         this.staminaNode.on(Node.EventType.TOUCH_END, this.onStaminaAddClick, this);
 
-        const staminaFontSize = this.scaleHud(24);
+        const staminaFontSize = this.scaleHud(23);
         const staminaLineHeight = this.scaleHud(42);
-        const staminaTextGroupWidth = this.scaleHud(116);
-        const staminaValueWidth = Math.round(staminaTextGroupWidth * 0.43);
-        const staminaSlashWidth = this.scaleHud(16);
+        const staminaTextGroupWidth = this.scaleHud(168);
+        const staminaValueWidth = Math.round(staminaTextGroupWidth * 0.45);
+        const staminaSlashWidth = this.scaleHud(18);
         const staminaMaxWidth = staminaTextGroupWidth - staminaValueWidth - staminaSlashWidth;
         const staminaTextLeft = -staminaTextGroupWidth / 2;
         const staminaTextY = -this.scaleHud(4);

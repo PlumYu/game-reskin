@@ -230,7 +230,7 @@ export function installDrawGridGuide(target: any): void {
         this.checkGuideIndex = this.guideIndex.filter((index: number) => this.clickedSquares[index]);
         this.buildGuideOverlay();
         this.setGuideConfirmVisible(false);
-        this.updateGuideTip('牛马周围不能有牛马。\n按住格子滑动，批量排除周围位置', v3(0, 335, 0));
+        this.updateGuideTip('猫猫周围不能再藏猫猫。\n按住格子滑动，批量排除周围位置', v3(0, 335, 0));
         this.addGuideBacklights(this.guideIndex);
         this.showGuideFingerAt(this.getFirstIncompleteGuideCell());
     },
@@ -637,8 +637,8 @@ export function installDrawGridGuide(target: any): void {
         if (label) {
             const cellName = typeof this.getHintColorCellNameByIndex === 'function'
                 ? this.getHintColorCellNameByIndex(targetIndex)
-                : '高亮气球';
-            label.string = `${cellName || '高亮气球'}可能藏着牛马；点一键应用，或连点高亮气球把它找出来。`;
+                : '高亮格子';
+            label.string = `${cellName || '高亮格子'}可能藏着猫猫；点一键应用，或连点高亮格子把它找出来。`;
         }
         this.setHintPanelShown?.(true);
         if (this.guideTipCardNode && this.guideTipCardNode.isValid) {
@@ -651,7 +651,7 @@ export function installDrawGridGuide(target: any): void {
             this.guideOverlayNode.setSiblingIndex(Math.max(0, this.hintPanelNode.getSiblingIndex() - 1));
             this.hintPanelNode.setSiblingIndex(this.guideOverlayNode.getSiblingIndex() + 1);
         }
-        this.showWorkplaceToast('连点这里找出牛马', v3(0, 300, 0), new Color(255, 238, 92, 255));
+        this.showWorkplaceToast('连点这里找出猫猫', v3(0, 300, 0), new Color(255, 238, 92, 255));
         this.renderGrid();
         return true;
     },
@@ -757,7 +757,7 @@ export function installDrawGridGuide(target: any): void {
                 this.guideOverlayNode.setSiblingIndex(Math.max(0, this.hintPanelNode.getSiblingIndex() - 1));
                 this.hintPanelNode.setSiblingIndex(this.guideOverlayNode.getSiblingIndex() + 1);
             }
-            this.showWorkplaceToast('这些气球可能有牛马，连点找出来', v3(0, 300, 0), new Color(255, 238, 92, 255));
+            this.showWorkplaceToast('这些格子里可能藏着猫猫，连点找出来', v3(0, 300, 0), new Color(255, 238, 92, 255));
             this.renderGrid();
             return true;
         }
