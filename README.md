@@ -6,40 +6,60 @@
 
 ## Main 分支规则
 
-`main` 只做基础工程 copy 和公共基线同步用途，不在 `main` 上做具体主题换皮修改。
+`main` 只做基础工程 copy、公共同步和通用经验沉淀用途，不在 `main` 上做具体主题换皮修改。
 
 所有游戏主题、素材替换、包名配置、OSS prefix、审核版本和验收记录，都必须在独立主题分支中完成。需要新包时，先从 `main` 新建分支，再在新分支里修改。
 
-## 当前分支
+## 目录说明
 
-分支：`shangke-dianming`
+- `assets/`：Cocos 工程资源，包含本地资源、远程资源源文件和脚本组件。
+- `settings/`：Cocos 工程配置。
+- `profiles/`：构建相关配置，仅保留必要的可提交配置文件。
+- `README.md`：仓库用途、分支规则、通用换皮流程和踩坑记录；主题专属说明写在对应主题分支的 README 中。
 
-主题：`上课点名谁没来`
+## 分支约定
 
-目标：在不改玩法逻辑的前提下，把基础找物/找牛玩法包装成“大学课堂点名、座位观察、缺席目标查找”的主题。
+- `main`：基础工程快照，只做 copy 基线、公共同步和通用文档，不直接做具体主题换皮。
+- 主题分支：从 `main` 切出，例如 `shangke-dianming`、`tushuguan-biezhanzuo`，只放该主题的换皮改动。
+- 主题分支 README 可以补充当前主题名称、主题方向、素材清单、验收状态和特殊注意事项。
 
-## 上课点名谁没来换皮清单
+## 新主题建议流程
+
+1. 从 `main` 新建主题分支。
+2. 先确定游戏名称、主题方向、图标和平台基础信息。
+3. 按 P0/P1/P2 拆换皮资源，不要一次性乱改所有文件。
+4. 替换图片和音频时保留 `.meta`，除非明确知道 uuid 不被引用。
+5. 代码面板主题化：确定主色调后，统一修改 SettingPanel、RankPanel、FailPanel、GlobalHud 等的配色常量。
+6. 扫描可见文案，替换为当前主题口径。
+7. 构建后在微信开发者工具验收首页、关卡、提示、设置、结算、排行榜、音频和控制台。
+8. 验收通过后再提交并推送主题分支。
+
+## 通用换皮清单
 
 ### P0 必换
 
 - 首页背景：`assets/RemoteBundle/images/menu_main_bg.png`
-  - 方向：教室、黑板、讲台、座位表氛围。
-  - 注意：这是远程资源源文件，构建后进入 OSS remote bundle。
+- 游戏内背景：`assets/RemoteBundle/images/背景图.png`
 - 首页标题：`assets/RemoteBundle/images/menu_title_logo.png`
-  - 方向：替换成“上课点名谁没来”主题标题。
 - 首页中间角色：
   - `assets/RemoteBundle/characters/menu_idle_static.png`
   - `assets/BootstrapBundle/characters/menu_idle_static.png`
   - `assets/RemoteBundle/characters/menu_idle/*.png`
-  - 方向：学生、班长、点名册、缺席同学等形象；序列帧保持 `306x320`。
-- 棋盘格/棋子：`assets/RemoteBundle/balloon_atlas/*.png`
-  - 方向：把气球视觉换成座位格、课桌格、点名卡等。
-  - 注意：颜色暂不换，优先保持原有颜色区分和可读性。
+- 棋盘格/棋子：
+  - `assets/RemoteBundle/balloon_atlas/*.png`
+  - `assets/BootstrapBundle/balloon_atlas/*.png`
 - 主要按钮：
   - `assets/RemoteBundle/images/menu_level_button.png`
   - `assets/RemoteBundle/images/menu_daily_button.png`
   - `assets/RemoteBundle/images/menu_survival_button.png`
-  - 方向：按钮风格贴近校园/课堂，但入口文字逻辑先不大改。
+- 可见文案：代码、场景、弹窗、结算页、排行榜。
+- 代码绘制面板主题化（纯代码 UI，没有图片可换）：
+  - `assets/SettingPanel.ts`：设置弹窗配色
+  - `assets/RankPanel.ts`：排行榜面板配色
+  - `assets/FailPanel.ts`：普通失败结算配色
+  - `assets/DailyChallengeOverPanel.ts`：每日挑战结算配色
+  - `assets/SurvivalOverPanel.ts`：生存模式结算配色
+  - `assets/GlobalHud.ts`：金币/体力 HUD 文字颜色和尺寸
 
 ### P1 建议换
 
@@ -62,67 +82,20 @@
 
 ### P2 可后置
 
-- 音效：`assets/RemoteBundle/audio/`
-  - `bgm.mp3`
-  - `level_bgm.mp3`
-  - `level_win.mp3`
-  - `level_fail.mp3`
-  - `mark.mp3`
-  - `unmark.mp3`
-  - `ui_click.mp3`
-  - 审核版先保证不违和，不追求精品制作。
+- 音效：`assets/BootstrapBundle/audio/`、`assets/RemoteBundle/audio/`
 - 本地非远程 UI 小图：`assets/images/`
-  - `clear.png`
-  - `point.png`
-  - `tips1.png`
-  - `tips2.png`
-  - `yingyong.png`
-  - `02_lives_panel_no_hearts.png`
+- 代码混淆：审核包构建前确认混淆方案，优先保证 Cocos 与微信小游戏运行不受影响。
 
-### 文案检查
-
-代码里仍有“牛马 / 找牛 / 气球 / 剩余牛马”等文字。若只换图片不改文案，会和“上课点名”主题冲突。
-
-优先检查：
-
-- `assets/DrawGrid.ts`
-- `assets/GuidePanel.ts`
-- `assets/DrawGridModules/DrawGridToolbar.ts`
-- `assets/DrawGridModules/DrawGridFeedback.ts`
-- `assets/DailyChallengeOverPanel.ts`
-- `assets/PopupPanel.ts`
-- `assets/SkinPanel.ts`
-
-### 构建与 OSS
+## 构建与 OSS
 
 - 本地替换资源后再构建，不直接手动改 OSS。
 - 构建会生成远程资源包，再上传到 OSS。
-- 本主题建议使用独立 OSS prefix，例如：`nmxxq/wechat/shangke-dianming/`。
+- 每个主题建议使用独立 OSS prefix，例如：`nmxxq/wechat/<theme-branch>/`。
 - 不要和其他换皮包共用默认 `nmxxq/wechat/`，避免互相覆盖资源。
 
-### 已发现待补
+## 换皮踩坑记录
 
-- 原工程里有 `assets/BootstrapBundle/images/背景图.png` 和 `.meta`，当前 `game-reskin` 里缺失，正式构建前需要从原始 `B` 工程补回。
-
-## 目录说明
-
-- `assets/`：Cocos 工程资源，包含本地资源、远程资源源文件和脚本组件。
-- `settings/`：Cocos 工程配置。
-- `profiles/`：构建相关配置，仅保留必要的可提交配置文件。
-- `README.md`：仓库用途、分支规则和当前主题清单；不再单独维护 `docs/` 或 `packages/` 说明目录。
-
-## 分支约定
-
-- `main`：基础工程快照，只做 copy 基线和公共同步，不直接做具体主题换皮。
-- 主题分支：从 `main` 切出，例如 `shangke-dianming`，只放该主题的换皮改动；额外说明只写根目录 `README.md`。
-
-## 待做
-
-- 代码混淆：审核包构建前确认混淆方案，优先保证 Cocos 与微信小游戏运行不受影响。
-
-## 今日换皮踩坑记录
-
-这部分是给后续主题换皮复用的通用检查清单，不只针对 `shangke-dianming`。
+这部分是给后续主题换皮复用的通用检查清单。
 
 ### 1. 不要只换 RemoteBundle
 
@@ -161,6 +134,10 @@
 - 修改 `assets/` 里的源资源后，微信开发者工具不会自动看到新资源。
 - 每次补图、改 meta、改场景文案后，都要重新用 Cocos Creator 构建。
 - 微信开发者工具里看到的 `build/wechatgame` 是旧构建产物，不重新构建就会继续报旧问题。
+- 如果控制台还在报已经修过的旧错误，先检查构建产物时间和内容：
+  - `Get-Item build\<目标目录>\assets\main\index.js`
+  - `rg -uuu -n "旧错误关键字" build temp assets`
+- 源文件时间晚于 `build/.../index.js` 时，说明微信开发者工具正在跑旧包；需要重新构建并确认微信开发者工具导入的是新的目标目录。
 
 ### 6. 可见文案要单独扫
 
@@ -237,6 +214,8 @@
 - 第 2 关/第 4 关触发的提示解锁页，主要显示的是 `RemoteBundle/guide` 下的整张 PNG；只改代码文案不会改变这两页视觉。
 - 这些弹窗容易被漏掉，因为它们不是首页资源，也不一定在截图第一眼出现。
 - 每个主题至少要打开一次设置、提示、退出确认、提示购买面板，并触发一次提示解锁页，检查是否仍是原版 UI、旧主题图片或旧文案。
+- 首页也不能只换底图：如果每日挑战/生存模式入口底图本身比较花，必须用代码重做文字承载区，必要时改成上下大卡片，保证标题、次数、倒计时在小屏也能看清。
+- 排行榜入口如果图片里没有清晰文字，要额外补代码文字，并且挂在会浮动的图片节点内部。
 
 ### 14. 广告和分享失败不能静默
 
@@ -304,3 +283,56 @@
   - 进入关卡，确认 `level_bgm.mp3` 已换。
   - 点击按钮、标记、取消标记、翻开失败格，确认首包音效没有残留旧声音。
   - 完成一关、失败一关、领取金币/奖励、打开规则提示，确认远程包音效都符合当前主题。
+
+### 17. 生命/次数图标不要被旧资源卡死
+
+- 微信开发者工具里连续出现过：`[DrawGrid] heart sprite missing: aixin-001`。
+- `scene.scene` 里的 `aixin-*` 节点可能引用旧工程里的 SpriteFrame uuid；如果基础仓库缺少对应 png/meta，构建后运行时 `spriteFrame` 会为空。
+- 生命/次数机制是核心，但“爱心图片”只是视觉表达，不应该因为装饰资源缺失让游戏启动卡住。
+- 换皮时不要执着保留爱心，按主题改成更贴切的小物件：
+  - 图书馆/占座：占座卡、借阅卡、座位牌。
+  - 外卖：取餐票、外卖袋、小票。
+  - 职场：工牌、打卡牌。
+  - 奶茶/火锅：杯贴、号码牌、菜单牌。
+- 检查入口：
+  - `assets/DrawGridModules/DrawGridAssets.ts` 的 `resetHearts()` / `ensureHeartVisual()`。
+  - `assets/DrawGridModules/DrawGridHud.ts` 的扣次数/破碎效果。
+  - `assets/FailPanel.ts` 和 `assets/DailyChallengeOverPanel.ts` 的复活后次数恢复。
+- 建议做法：
+  - 如果继续用图片，必须连 png 和 `.meta` 一起补齐，保证 `scene.scene` 的 uuid 不断。
+  - 如果没有稳定资源，就用 `Graphics` 画主题化小图标，保留节点名和计数逻辑，只替换视觉。
+  - 不要在启动流程里因为非核心装饰图缺失直接 `throw`，否则会出现构建成功但进游戏卡住。
+- 修完后如果微信开发者工具仍报同一句 `[DrawGrid] heart sprite missing`，优先确认 `build/<目标目录>/assets/main/index.js` 是否还包含该字符串；包含就代表当前包不是新代码。
+
+### 18. 首页和结算页要按真实入口逐个验收
+
+- 首页口号不要保留通用文案，例如”看着简单，玩着上头”；要直接贴当前主题，比如图书馆主题用”找出占座目标”。
+- 首页每日挑战、生存模式入口如果是图片加代码文字，换图后还要重新调文字位置、字号、描边和颜色；不能只替换底图。
+- 全局体力框要按 `当前体力/上限体力` 的最长情况验收，例如 `120/120`，否则数值容易跑出框。
+- 设置弹窗不是图片资源，主要在 `assets/SettingPanel.ts` 里用 `Graphics` 画；必须单独主题化。
+- 普通失败、每日挑战失败、生存模式失败分别是三套代码：
+  - `assets/FailPanel.ts`
+  - `assets/DailyChallengeOverPanel.ts`
+  - `assets/SurvivalOverPanel.ts`
+- 这些面板只写进清单不等于已经换完；每次换皮后都要在微信开发者工具里实际触发一次：普通失败、每日失败、生存失败、设置弹窗、退出确认、体力不足入口。
+
+### 19. 排行榜面板需要单独换皮
+
+- 排行榜面板在 `assets/RankPanel.ts`，用 `Graphics` + `createRoundedCard` 纯代码绘制，没有独立图片资源。
+- 换皮时需要修改的配色要点：
+  - `PANEL_BG`：卡片背景色，应与当前主题设置面板一致。
+  - Tab 激活色：`paintTab()` 里的 `active` 颜色，要跟主题主色调统一。
+  - 关闭按钮：建议改为与 `SettingPanel.ts` 一致的圆形 X 按钮风格。
+  - 分数颜色：`createRankRow()` 里的分数 Label 颜色。
+  - 自己排名行高亮色 `SELF_ROW_BG`：要与主题色系协调。
+- 当前主题（图书馆/别占座）已统一为青绿色系 `(44, 127, 139)` 主色调，与 SettingPanel 保持一致。
+
+### 20. 首页金币和体力值显示优化
+
+- 金币数字颜色在 `assets/GlobalHud.ts` 的 `HUD_NUMBER_TEXT` 常量控制。
+  - 如果背景偏浅色，暗色文字可能不够醒目；当前主题改为白色文字 + 深色阴影方案。
+  - 修改时同步调整 `HUD_NUMBER_SHADOW` 阴影色，保证对比度。
+- 体力值显示框宽度由 `HUD_STAMINA_PILL_WIDTH` 控制，文字区域由 `staminaTextGroupWidth` 控制。
+  - 当 `当前体力/上限体力` 为三位数（如 `120/120`）时，原始宽度 228 + 文字区 154 会导致数字溢出。
+  - 当前已调整为框宽 268 + 文字区 190，确保三位数不溢出。
+  - 换皮时如果更换了 `hud_stamina_frame.png` 图片，需要确认新图片尺寸与代码宽度匹配。
